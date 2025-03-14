@@ -1,0 +1,59 @@
+.MainContainer {
+  /* border: 1px solid palegoldenrod; */
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  width: auto;
+  font-size: 200px;
+  gap: 10px;
+}
+
+.TimerDiv {
+  width: 200px;
+  background-color: rgb(255, 255, 255);
+  padding: 10px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  gap: 2px;
+}
+
+.ShootClockCon {
+  width: 4vw;
+  /* background-color: rgb(255, 255, 255); */
+  padding: 10px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  gap: 2px;
+  font-size: 12px;
+}
+
+.ShotClockTimer {
+  text-align: center;
+  width: 100%;
+  font-size: 30px;
+  color: white;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background-color: rgb(255, 255, 255);
+}
+
+#TimerBttn {
+  border-radius: 5px;
+  padding: 5px;
+  height: 4vh;
+  font-size: 14px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid black;
+  cursor: pointer;
+}

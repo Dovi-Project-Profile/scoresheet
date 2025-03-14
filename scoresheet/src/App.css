@@ -1,0 +1,229 @@
+@font-face {
+  font-family: BlackOpsOne;
+  src: url(../public/BlackOpsOne-Regular.ttf);
+  font-weight: 400;
+  font-style: normal;
+}
+
+#generalFont {
+  font-family: BlackOpsOne;
+}
+
+.App {
+  width: auto;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.397);
+  text-align: center;
+  box-sizing: border-box;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.MainDiv {
+  width: 150px;
+  height: auto;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 1px;
+}
+
+.TeamNameDiv {
+  width: auto;
+  /* background-color: rgb(255, 255, 255); */
+  padding: 10px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  gap: 2px;
+}
+
+.TeamName {
+  width: 100%;
+  text-align: center;
+  border: 1px solid transparent;
+  min-width: 50px;
+  font-size: 15px;
+  font-weight: bold;
+  color: white;
+  background-color: transparent;
+  text-transform: uppercase;
+}
+.Score {
+  text-align: center;
+  width: 100%;
+  height: 4.5vh;
+  font-size: 50px;
+  background-color: white;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  /* background-color: rgba(255, 255, 255, 0); */
+}
+
+.DivBttn {
+  text-align: center;
+  width: 85%;
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 10px;
+
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+#away {
+  :hover {
+    background-color: rgb(127, 197, 255);
+    color: white;
+  }
+}
+#home {
+  :hover {
+    background-color: rgb(255, 142, 127);
+    color: white;
+  }
+}
+#periodid {
+  :hover {
+    background-color: rgb(224, 134, 48);
+    color: white;
+  }
+}
+
+.Bttn1 {
+  cursor: pointer;
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  width: 100%;
+  height: fit-content;
+  background-color: rgb(255, 255, 255);
+  border: 1px solid black;
+}
+
+.PeriodWrapper {
+  height: auto;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  grid-gap: 10px;
+  padding: 1px;
+}
+.PeriodDiv {
+  width: 2.5vw;
+  /* background-color: black; */
+  /* padding: 10px 0; */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  gap: 5px;
+}
+
+.inputPeriod {
+  width: 100%;
+  text-align: center;
+  border: 1px solid transparent;
+  min-width: 50px;
+  font-size: 12px;
+  font-weight: bold;
+  color: rgb(255, 255, 255);
+  background-color: rgb(224, 134, 48);
+  text-transform: uppercase;
+}
+
+.ScoreWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 10px;
+  /* background-color: aquamarine; */
+}
+
+.BttnConJSX {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  /* margin-left: 50px; */
+  color: white;
+  display: block;
+  position: relative;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.container input {
+  border-radius: 5px;
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 1;
+  height: 15px;
+  width: 15px;
+  background-color: #eee;
+}
+
+/* On mouse-over, add a grey background color */
+.container:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.container input:checked ~ .checkmark {
+  background-color: orange;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.container input:checked ~ .checkmark:after {
+  border-radius: 100%;
+  display: block;
+}
+
+.bttnArrow {
+  background-color: transparent;
+  color: orange;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-weight: bolder;
+  font-size: 18px;
+  letter-spacing: -2px;
+}
