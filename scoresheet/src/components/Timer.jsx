@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import "../TimerStyle.css";
 import "../App.css";
 import Alert from "../assets/Buzzer";
-// import Alert from "./asset/Buzzer";
 
 const TimerCom = () => {
   const [inputTime, setInputTime] = useState("10:00");
