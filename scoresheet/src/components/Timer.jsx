@@ -99,6 +99,15 @@ const TimerCom = () => {
     if (!isNaN(clockPart)) setShotClockTime(clockPart * 1000);
   };
 
+  const handleStartStop = () => {
+    if (shotClockTime <= 0) {
+      setShotClockTime(24000);
+    }
+    setIsRunning(!isRunning);
+    setIsShotClockRunning(!isShotClockRunning);
+    setIsTimeDone(true);
+  };
+
   return (
     <div className="MainContainer">
       <div className="TimerDiv" style={{ gridColumn: "span 1" }}>
@@ -137,7 +146,7 @@ const TimerCom = () => {
         {isShotClockDone ? (
           <input
             style={{
-              color: "rgb(224, 48, 48)",
+              color: "rgb(89, 219, 77)",
               textAlign: "center",
               textShadow: "2px 2px rgb(90, 90, 90)",
             }}
@@ -151,9 +160,10 @@ const TimerCom = () => {
         ) : (
           <input
             style={{
-              color: "rgb(224, 134, 48)",
+              color:
+                shotClockTime <= 10000 ? "rgb(255, 0, 0)" : "rgb(224, 134, 48)",
               textAlign: "center",
-              textShadow: "2px 2px rgb(90, 90, 90)",
+              textShadow: "1px 1px rgb(37, 37, 37)",
             }}
             id="generalFont"
             className="ShotClockTimer"
@@ -193,9 +203,10 @@ const TimerCom = () => {
           }}
           disabled={!isTimeDone}
           onClick={() => {
-            setIsRunning(!isRunning);
-            setIsShotClockRunning(!isShotClockRunning);
-            setIsTimeDone(true);
+            handleStartStop();
+            // setIsRunning(!isRunning);
+            // setIsShotClockRunning(!isShotClockRunning);
+            // setIsTimeDone(true);
           }}
         >
           {isRunning ? <p>Stop</p> : <p>Start</p>}
