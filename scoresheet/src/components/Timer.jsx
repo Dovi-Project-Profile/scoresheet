@@ -213,7 +213,10 @@ const TimerCom = () => {
         </button>
         <button
           id="TimerBttn"
-          onClick={() => setBuzzerPlay((prev) => !prev)} // Only allow setting time when not running
+          onClick={() => {
+            setBuzzerPlay((prev) => !prev);
+            setTimeout(() => setBuzzerPlay(false), 500);
+          }}
         >
           Buzzer
         </button>
@@ -263,8 +266,8 @@ const TimerCom = () => {
           24
         </button>
       </div>
-      {buzzerPlay || (shotClockTime !== 1000 && <Alert />)}
-      {mainTimer !== 1000 && <Alert />}
+      <Alert trigger={shotClockTime <= 0 || mainTimer <= 0} />
+      <Alert trigger={buzzerPlay} />
     </div>
   );
 };

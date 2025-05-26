@@ -1,7 +1,14 @@
 import { useState } from "react";
 import "./StatsSheet.css";
+import Alert from "../assets/Buzzer";
 
-export default function StatSheet({ teamName, onScoreChange, periodLock }) {
+export default function StatSheet({
+  teamName,
+  onScoreChange,
+  periodLock,
+  onChangeBonusHome,
+  onChangeBonusAway,
+}) {
   const createEmptyRow = () => ({
     no: "",
     player: "",
@@ -10,10 +17,11 @@ export default function StatSheet({ teamName, onScoreChange, periodLock }) {
     secquarter: "",
     thirdquarter: "",
     fourthquarter: "",
-    total: 0,
+    total: "",
   });
 
   const [data, setData] = useState(Array.from({ length: 12 }, createEmptyRow));
+  const [playBuzzer, setPlayBuzzer] = useState(false);
 
   const handleChange = (index, field, value) => {
     const newData = [...data];
@@ -72,7 +80,7 @@ export default function StatSheet({ teamName, onScoreChange, periodLock }) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `statsheet_team_${teamName}.csv`;
+    a.download = `statsheet_team_${teamName.toUpperCase()}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -102,7 +110,7 @@ export default function StatSheet({ teamName, onScoreChange, periodLock }) {
             alignItems: "flex-start",
           }}
         >
-          {teamName}
+          {teamName.toUpperCase()}
         </h1>
       </div>
 
@@ -186,6 +194,7 @@ export default function StatSheet({ teamName, onScoreChange, periodLock }) {
                             handleChange(idx, field, e.target.value)
                           }
                           readOnly={field === "total"}
+                          type={field === "fouls" && "number"}
                         />
                       </td>
                     );
@@ -235,6 +244,22 @@ export default function StatSheet({ teamName, onScoreChange, periodLock }) {
                         style={{
                           accentColor: foulIdx === 4 ? "red" : "",
                         }}
+                        disabled={
+                          (quarterIdx === 0 && periodLock >= 2) ||
+                          (quarterIdx === 1 && periodLock >= 3) ||
+                          (quarterIdx === 2 && periodLock >= 4)
+                        }
+                        onChange={(e) => {
+                          if (foulIdx === 4 && e.target.checked) {
+                            if (onChangeBonusHome) onChangeBonusHome(true);
+                            if (onChangeBonusAway) onChangeBonusAway(true);
+                          }
+                          console.log(
+                            `Team ${teamName.toUpperCase()} Quarter ${
+                              quarterIdx + 1
+                            } foul ${foulIdx + 1} `
+                          );
+                        }}
                       />
                     ))}
                   </td>
@@ -264,6 +289,14 @@ export default function StatSheet({ teamName, onScoreChange, periodLock }) {
                         <input
                           key={`to-${halfIdx}-to-${toIdx}`}
                           type="checkbox"
+                          onChange={(e) => {
+                            if (e.target.checked === true) {
+                              setPlayBuzzer(true);
+                              setTimeout(() => {
+                                setPlayBuzzer(false);
+                              }, 500);
+                            }
+                          }}
                         />
                       )
                     )}
@@ -277,6 +310,7 @@ export default function StatSheet({ teamName, onScoreChange, periodLock }) {
           Export CSV
         </button>
       </div>
+      <Alert trigger={playBuzzer} />
     </div>
   );
 }

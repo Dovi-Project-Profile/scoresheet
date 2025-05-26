@@ -11,6 +11,8 @@ function App() {
   const [homeScore, setHomeScore] = useState(0);
   const [awayScore, setAwayScore] = useState(0);
   const [thePeriod, setthePeriod] = useState(1);
+  const [bonusHome, setBonusHome] = useState(false);
+  const [bonusAway, setBonusAway] = useState(false);
 
   const homeBttnJSX = (
     <div className="DivBttn" id="home">
@@ -115,7 +117,13 @@ function App() {
             <div>
               <label className="container">
                 <b style={{ paddingRight: "5px" }}>{"BONUS"}</b>
-                <input type="checkbox" />
+                <input
+                  type="checkbox"
+                  onChange={(e) => {
+                    setBonusHome(e.target.checked);
+                  }}
+                  checked={bonusHome}
+                />
                 <span className="checkmark" />
               </label>
             </div>
@@ -148,7 +156,14 @@ function App() {
             <div>
               <label className="container">
                 <b style={{ paddingRight: "5px" }}>{"BONUS"}</b>
-                <input type="checkbox" />
+                <input
+                  type="checkbox"
+                  onChange={(e) => {
+                    setBonusAway(e.target.checked);
+                    console.log("Bonus Away:", e.target.checked);
+                  }}
+                  checked={bonusAway}
+                />
                 <span className="checkmark" />
               </label>
             </div>
@@ -162,6 +177,7 @@ function App() {
             teamName={homeTeam}
             onScoreChange={setHomeScore}
             periodLock={thePeriod}
+            onChangeBonusHome={setBonusHome}
           />
         </div>
         <div className="statsSheetDiv">
@@ -169,6 +185,7 @@ function App() {
             teamName={awayTeam}
             onScoreChange={setAwayScore}
             periodLock={thePeriod}
+            onChangeBonusAway={setBonusAway}
           />
         </div>
       </div>
