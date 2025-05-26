@@ -204,9 +204,6 @@ const TimerCom = () => {
           disabled={!isTimeDone}
           onClick={() => {
             handleStartStop();
-            // setIsRunning(!isRunning);
-            // setIsShotClockRunning(!isShotClockRunning);
-            // setIsTimeDone(true);
           }}
         >
           {isRunning ? <p>Stop</p> : <p>Start</p>}
@@ -215,7 +212,7 @@ const TimerCom = () => {
           id="TimerBttn"
           onClick={() => {
             setBuzzerPlay((prev) => !prev);
-            setTimeout(() => setBuzzerPlay(false), 500);
+            // setTimeout(() => setBuzzerPlay(false), 500);
           }}
         >
           Buzzer

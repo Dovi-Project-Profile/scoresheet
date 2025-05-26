@@ -3,11 +3,10 @@ import { useEffect, useRef } from "react";
 
 const Alert = ({ trigger }) => {
   const audioRef = useRef(null);
-  console.log(trigger);
 
   useEffect(() => {
     if (trigger) {
-      // audioRef.current.currentTime = 0;
+      audioRef.current.currentTime = 0;
       audioRef.current.play();
     }
   }, [trigger]);
