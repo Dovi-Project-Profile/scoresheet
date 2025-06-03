@@ -1,9 +1,19 @@
 import { useState } from "react";
 
-export const Period = () => {
+export const Period = ({ onPeriodChange }) => {
   const [period, setPeriod] = useState(1);
   const [periodText, setPeriodText] = useState("PERIOD");
   const [ballLeftOrRight, setBallLeftOrRight] = useState(false);
+
+  const handlePeriodChange = (newPeriod) => {
+    if (newPeriod === "add") {
+      setPeriod(period + 1);
+      onPeriodChange(period + 1);
+    } else if (newPeriod === "minus") {
+      setPeriod(period - 1);
+      onPeriodChange(period - 1);
+    }
+  };
   return (
     <div className="PeriodWrapper">
       <div className="PeriodDiv">
@@ -44,7 +54,9 @@ export const Period = () => {
         <button
           className="Bttn1"
           onClick={() => {
-            if (period !== 1) setPeriod(period - 1);
+            if (period !== 1) {
+              handlePeriodChange("minus");
+            }
           }}
         >
           -
@@ -52,7 +64,9 @@ export const Period = () => {
         <button
           className="Bttn1"
           onClick={() => {
-            if (period !== 9) setPeriod(period + 1);
+            if (period !== 9) {
+              handlePeriodChange("add");
+            }
           }}
         >
           +

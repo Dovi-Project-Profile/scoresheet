@@ -1,12 +1,12 @@
 @font-face {
-  font-family: BlackOpsOne;
-  src: url(../public/BlackOpsOne-Regular.ttf);
+  font-family: DS-DIGI;
+  src: url(../public/DS-DIGIB.TTF);
   font-weight: 400;
   font-style: normal;
 }
 
 #generalFont {
-  font-family: BlackOpsOne;
+  font-family: DS-DIGI;
 }
 
 .App {
@@ -161,7 +161,6 @@
 }
 
 .container {
-  /* margin-left: 50px; */
   color: white;
   display: block;
   position: relative;
@@ -226,4 +225,29 @@
   font-weight: bolder;
   font-size: 18px;
   letter-spacing: -2px;
+}
+
+.statsDiv {
+  background: linear-gradient(
+    rgba(255, 190, 111, 0) 0%,
+    rgba(255, 190, 111, 0.5) 25%,
+    rgba(255, 190, 111, 0.7) 50%,
+    rgb(255, 190, 111) 100%
+  );
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  color: white;
+  padding-bottom: 10px;
+}
+
+.statsSheetDiv {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
 }

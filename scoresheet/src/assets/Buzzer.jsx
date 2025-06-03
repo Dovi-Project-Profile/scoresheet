@@ -1,18 +1,18 @@
 import buzzerSound from "./buzzer1.mp3";
 import { useEffect, useRef } from "react";
 
-const Alert = () => {
+const Alert = ({ trigger }) => {
   const audioRef = useRef(null);
 
   useEffect(() => {
-    audioRef.current.muted = false;
-    if (audioRef.current) {
+    if (trigger) {
+      audioRef.current.currentTime = 0;
       audioRef.current.play();
     }
-  }, []);
+  }, [trigger]);
 
   return (
-    <audio ref={audioRef} src={buzzerSound} autoPlay>
+    <audio ref={audioRef} src={buzzerSound}>
       <track kind="captions" />
     </audio>
   );

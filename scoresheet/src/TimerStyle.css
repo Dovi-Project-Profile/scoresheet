@@ -39,7 +39,6 @@
   text-align: center;
   width: 100%;
   font-size: 30px;
-  color: white;
   border: 1px solid transparent;
   border-radius: 5px;
   background-color: rgb(255, 255, 255);
@@ -56,4 +55,9 @@
   align-items: center;
   border: 1px solid black;
   cursor: pointer;
+
+  &:not(:disabled):hover {
+    background-color: rgb(224, 134, 48);
+    color: white;
+  }
 }
