@@ -206,7 +206,7 @@ const TimerCom = () => {
             handleStartStop();
           }}
         >
-          {isRunning ? <p>Stop</p> : <p>Start</p>}
+          {isRunning ? "Stop" : "Start"}
         </button>
         <button
           id="TimerBttn"

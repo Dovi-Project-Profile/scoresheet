@@ -1,6 +1,11 @@
 import { useState } from "react";
 import "./StatsSheet.css";
+import "../TimerStyle.css";
+import "./buttonStyles.css";
 import Alert from "../assets/Buzzer";
+
+const headerColor = "#283344";
+const foulBgColor = "#252e3f"
 
 export default function StatSheet({
   teamName,
@@ -70,19 +75,21 @@ export default function StatSheet({
   };
 
   const exportToCSV = () => {
-    const headers = Object.keys(data[0]);
-    const rows = data.map((row) =>
-      headers.map((h) => JSON.stringify(row[h] ?? ""))
-    );
-    const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    if (confirm(`Export stats for ${teamName.toUpperCase()}?`)) {
+        const headers = Object.keys(data[0]);
+        const rows = data.map((row) =>
+          headers.map((h) => JSON.stringify(row[h] ?? ""))
+        );
+        const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
 
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `statsheet_team_${teamName.toUpperCase()}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+        const blob = new Blob([csv], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `statsheet_team_${teamName.toUpperCase()}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
   };
 
   return (
@@ -96,10 +103,18 @@ export default function StatSheet({
             gap: "1rem",
           }}
         >
-          <button onClick={addPlayer} disabled={data.length >= 20}>
+         
+          <button id="GeneralBttn" style={{
+            cursor: data.length >= 20 && "not-allowed",
+          }}
+            onClick={addPlayer} disabled={data.length >= 20} >
             Add Player
           </button>
-          <button onClick={removePlayer} disabled={data.length <= 12}>
+         
+          <button id="GeneralBttn" style={{
+            cursor: data.length === 12 && "not-allowed",
+          }}
+          onClick={removePlayer} disabled={data.length <= 12}>
             Remove Player
           </button>
         </div>
@@ -118,12 +133,12 @@ export default function StatSheet({
         <table
           border="1"
           cellPadding="5"
-          style={{ borderCollapse: "collapse", marginBottom: "1rem" }}
+          style={{ borderCollapse: "collapse", marginBottom: "1rem"}}
         >
           <thead
             style={{
               position: "sticky",
-              background: "rgb(122, 122, 122)",
+              background: "#283344",
               top: 0,
               zIndex: 1,
             }}
@@ -150,7 +165,7 @@ export default function StatSheet({
                   key={idx}
                   style={{
                     opacity: lesthan ? 0.6 : 1,
-                    backgroundColor: lesthan ? "#ffb5b5" : "transparent",
+                    backgroundColor: lesthan ? "#ffb5b55a" : "transparent",
                   }}
                 >
                   {Object.keys(row).map((field) => {
@@ -186,6 +201,7 @@ export default function StatSheet({
                             textTransform:
                               field === "player" ? "uppercase" : "none",
                             fontWeight: thefontweight,
+                            borderRadius: "5px",
                           }}
                           min={field === "fouls" ? 0 : undefined}
                           max={field === "fouls" ? 5 : undefined}
@@ -209,7 +225,6 @@ export default function StatSheet({
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(3, auto)",
-          //   justifyContent: "space-between",
           alignItems: "center",
         }}
       >
@@ -222,7 +237,7 @@ export default function StatSheet({
           }}
         >
           <table>
-            <thead style={{ backgroundColor: "rgb(122, 122, 122)" }}>
+            <thead style={{ backgroundColor: headerColor }}>
               <tr>
                 <th colSpan="4">Team Fouls</th>
               </tr>
@@ -234,7 +249,7 @@ export default function StatSheet({
               </tr>
             </thead>
             <tbody>
-              <tr style={{ backgroundColor: "rgb(224, 134, 48)" }}>
+              <tr style={{ backgroundColor: foulBgColor }}>
                 {Array.from({ length: 4 }).map((_, quarterIdx) => (
                   <td key={`quarter-Q${quarterIdx + 1}`}>
                     {Array.from({ length: 5 }).map((_, foulIdx) => (
@@ -270,7 +285,7 @@ export default function StatSheet({
         </div>
         <div>
           <table style={{ width: "100%" }}>
-            <thead style={{ backgroundColor: "rgb(122, 122, 122)" }}>
+            <thead style={{ backgroundColor: headerColor }}>
               <tr>
                 <th colSpan="3">Time Outs</th>
               </tr>
@@ -281,7 +296,7 @@ export default function StatSheet({
               </tr>
             </thead>
             <tbody>
-              <tr style={{ backgroundColor: "rgb(224, 134, 48)" }}>
+              <tr style={{ backgroundColor: foulBgColor }}>
                 {Array.from({ length: 3 }).map((_, halfIdx) => (
                   <td key={`half-to${halfIdx + 1}`}>
                     {Array.from({ length: halfIdx === 2 ? 1 : 2 }).map(
@@ -306,7 +321,7 @@ export default function StatSheet({
             </tbody>
           </table>
         </div>
-        <button style={{ height: "25px" }} onClick={exportToCSV}>
+        <button id="GeneralBttn" style={{ height: "25px" }} onClick={exportToCSV}>
           Export CSV
         </button>
       </div>
