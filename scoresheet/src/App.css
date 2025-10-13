@@ -262,3 +262,19 @@ body {
   justify-content: center;
 }
 
+nav {
+  padding: 0px 15px;
+}
+
+
+
+nav a {
+  color: #141a27;
+  margin: 5px;
+  display: inline-block;
+  
+}
+
+nav a:hover{
+  color: gray;
+}
