@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
+import "./AdminStyles.css";
+import { useDebouncer } from "../../hooks/useDebouncer";
 
 export const TeamForm = () => {
-  const [form, setForm] = useState({
+  const INITIAL_FROM = {
+    team_id: null,
     team_name: "",
     short_name: "",
     team_owner: "",
@@ -10,12 +13,14 @@ export const TeamForm = () => {
     team_state: "",
     city: "",
     founded_date: "",
-  });
+  };
+  const [form, setForm] = useState(INITIAL_FROM);
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [regions, setRegions] = useState([]);
   const [cities, setCities] = useState([]);
   const [selectedRegionCode, setSelectedRegionCode] = useState("");
+  const [mode, setMode] = useState("view"); // view, edit, new
 
   // Load regions
   useEffect(() => {
@@ -32,7 +37,7 @@ export const TeamForm = () => {
   useEffect(() => {
     if (!selectedRegionCode) {
       setCities([]);
-      handleChange("city", "");
+      handleChangeForm("city", "");
       return;
     }
 
@@ -46,7 +51,7 @@ export const TeamForm = () => {
           (city) => city.regionCode === selectedRegionCode
         );
         setCities(filtered);
-        handleChange("city", "");
+        // handleChangeForm("city", "");
       })
       .catch((err) => console.error("Error loading cities:", err));
   }, [selectedRegionCode]);
@@ -74,51 +79,90 @@ export const TeamForm = () => {
     fetchTeams();
   }, []);
 
-  const handleChange = (key, value) => {
+  const capitalizeWords = (text = "") =>
+    text.replace(/\b\w/g, (char) => char.toUpperCase());
+
+  const handleChangeForm = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
+  const handleSelectTeam = (elem) => {
+    setForm(elem);
+    const region = regions.find((r) => r.name === elem.team_state);
+    setSelectedRegionCode(region ? region.code : "");
+  };
+
+  const handleEditTeam = async () => {
+    if (mode === "edit") {
+      if (!form.team_id) {
+        alert("No team selected to edit!");
+        return;
+      }
+      try {
+        const { error } = await supabase
+          .from("tbl_local_team")
+          .update({
+            team_name: form.team_name,
+            short_name: form.short_name.toUpperCase(),
+            team_owner: form.team_owner,
+            team_coach: form.team_coach,
+            team_state: form.team_state,
+            city: form.city,
+            founded_date: form.founded_date,
+          })
+          .eq("team_id", form.team_id); // match the record to update
+
+        if (error) throw error;
+
+        alert("Team successfully updated!");
+        await fetchTeams(); // refresh your table after update
+        setMode("view");
+        setForm(INITIAL_FROM);
+      } catch (err) {
+        console.error("Error updating team:", err.message);
+        alert("Failed to update team. Please check the console for details.");
+      }
+    }
+  };
+  const debouncedEdit = useDebouncer(handleEditTeam, 300);
+
   // Insert into Supabase + auto refresh
   const handleAddTeam = async () => {
-    if (!form.team_name || !form.team_owner) {
-      alert("Please fill out required fields (Team Name & Owner)");
-      return;
+    if (mode === "new") {
+      if (!form.team_name || !form.team_owner) {
+        alert("Please fill out required fields (Team Name & Owner)");
+        return;
+      }
+      try {
+        const { error } = await supabase.from("tbl_local_team").insert([
+          {
+            team_name: form.team_name,
+            short_name: form.short_name.toUpperCase(),
+            team_owner: form.team_owner,
+            team_coach: form.team_coach,
+            team_state: form.team_state,
+            city: form.city,
+            founded_date: form.founded_date,
+          },
+        ]);
+
+        if (error) throw error;
+
+        alert("Team successfully added!");
+        await fetchTeams();
+        setMode("view");
+        setForm(INITIAL_FROM);
+      } catch (err) {
+        console.error("Error inserting team:", err.message);
+        alert("Failed to add team. Please check the console for details.");
+      }
     }
+  };
+  const debounceNew = useDebouncer(handleAddTeam, 300);
 
-    try {
-      const { error } = await supabase.from("tbl_local_team").insert([
-        {
-          team_name: form.team_name,
-          short_name: form.short_name.toUpperCase(),
-          team_owner: form.team_owner,
-          team_coach: form.team_coach,
-          team_state: form.team_state,
-          city: form.city,
-          founded_date: form.founded_date,
-        },
-      ]);
-
-      if (error) throw error;
-
-      alert("Team successfully added!");
-
-      // Refresh table from database
-      await fetchTeams();
-
-      // Reset form
-      setForm({
-        team_name: "",
-        short_name: "",
-        team_owner: "",
-        team_coach: "",
-        team_state: "",
-        city: "",
-        founded_date: "",
-      });
-    } catch (err) {
-      console.error("Error inserting team:", err.message);
-      alert("Failed to add team. Please check the console for details.");
-    }
+  const handleEnableAddTeam = () => {
+    setMode("new");
+    setForm(INITIAL_FROM);
   };
 
   return (
@@ -140,43 +184,79 @@ export const TeamForm = () => {
         }}
       >
         <b
-          style={{ borderBottom: "1px solid black", gridColumn: "1 / span 4" }}
+          style={{
+            borderBottom: "1px solid black",
+            gridColumn: "1 / span 4",
+            display: "flex",
+            justifyContent: "space-between",
+          }}
         >
           Register Team
+          {(form.team_id || mode === "new") && (
+            <button
+              style={{
+                width: "fit-content",
+                justifySelf: "end",
+                cursor: "pointer",
+                gridColumn: "4",
+                border: "transparent",
+              }}
+              onClick={() => {
+                setForm(INITIAL_FROM);
+                setMode("view");
+              }}
+            >
+              {mode === "view" ? "Clear" : "Cancel"}
+            </button>
+          )}
         </b>
         <label>Team Name</label>
         <input
+          disabled={mode === "view"}
           value={form.team_name}
-          onChange={(e) => handleChange("team_name", e.target.value)}
+          onChange={(e) =>
+            handleChangeForm("team_name", capitalizeWords(e.target.value))
+          }
         />
         <label>Short Name</label>
         <input
+          disabled={mode === "view"}
           value={form.short_name}
-          onChange={(e) => handleChange("short_name", e.target.value)}
+          onChange={(e) =>
+            handleChangeForm("short_name", capitalizeWords(e.target.value))
+          }
         />
         <label>Owner</label>
         <input
+          disabled={mode === "view"}
           value={form.team_owner}
-          onChange={(e) => handleChange("team_owner", e.target.value)}
+          onChange={(e) =>
+            handleChangeForm("team_owner", capitalizeWords(e.target.value))
+          }
         />
         <label>Coach</label>
         <input
+          disabled={mode === "view"}
           value={form.team_coach}
-          onChange={(e) => handleChange("team_coach", e.target.value)}
+          onChange={(e) =>
+            handleChangeForm("team_coach", capitalizeWords(e.target.value))
+          }
         />
         <label>Region</label>
         <select
+          disabled={mode === "view"}
           value={regions.find((r) => r.name === form.team_state)?.code || ""}
           onChange={(e) => {
             const selectedCode = e.target.value;
             const selectedRegion = regions.find(
               (region) => region.code === selectedCode
             );
-            handleChange(
+            handleChangeForm(
               "team_state",
               selectedRegion ? selectedRegion.name : ""
             );
             setSelectedRegionCode(selectedCode);
+            handleChangeForm("city", "");
           }}
         >
           <option value=""></option>
@@ -189,9 +269,9 @@ export const TeamForm = () => {
 
         <label>City</label>
         <select
+          disabled={cities.length === 0 || !form.team_state || mode === "view"}
           value={form.city}
-          onChange={(e) => handleChange("city", e.target.value)}
-          disabled={cities.length === 0 || !form.team_state}
+          onChange={(e) => handleChangeForm("city", e.target.value)}
         >
           <option value=""></option>
           {cities.map((city) => (
@@ -202,18 +282,42 @@ export const TeamForm = () => {
         </select>
         <label>Founded Date</label>
         <input
+          disabled={mode === "view"}
           type="date"
           value={form.founded_date}
-          onChange={(e) => handleChange("founded_date", e.target.value)}
+          onChange={(e) => handleChangeForm("founded_date", e.target.value)}
         />
-        <button
-          id="GeneralBttn"
-          type="button"
-          onClick={handleAddTeam}
-          style={{ borderBottom: "1px solid black", gridColumn: "4" }}
+        <div
+          style={{
+            gridColumn: "3/span 2",
+            display: "grid",
+            gridTemplateColumns: "auto auto",
+          }}
         >
-          Add Team
-        </button>
+          <button
+            id="GeneralBttn"
+            type="button"
+            onClick={() =>
+              mode === "edit" ? debouncedEdit() : setMode("edit")
+            }
+            style={{ borderBottom: "1px solid black" }}
+            disabled={form.team_id === null}
+          >
+            {mode === "edit" ? "Save edit" : "Edit"}
+          </button>
+          <button
+            disabled={mode === "edit"}
+            id="GeneralBttn"
+            type="button"
+            onClick={() =>
+              mode === "new" ? debounceNew() : handleEnableAddTeam()
+            }
+            style={{ borderBottom: "1px solid black" }}
+            // disabled={form.team_id !== null}
+          >
+            {mode === "new" ? "Save team" : "New team"}
+          </button>
+        </div>
       </form>
       {/* Table Section */}
       {loading ? (
@@ -228,6 +332,7 @@ export const TeamForm = () => {
           }}
         >
           <table
+            className="tableStyle"
             border="1"
             cellPadding="8"
             style={{ borderCollapse: "collapse" }}
@@ -237,7 +342,7 @@ export const TeamForm = () => {
                 backgroundColor: "#f0f0f0",
                 position: "sticky",
                 top: 0,
-                zIndex: 2, // keeps header above rows
+                zIndex: 2,
               }}
             >
               <tr>
@@ -253,7 +358,13 @@ export const TeamForm = () => {
             </thead>
             <tbody>
               {teams.map((elem, index) => (
-                <tr key={elem.team_id + index}>
+                <tr
+                  style={{ cursor: "pointer" }}
+                  key={elem.team_id + index}
+                  onClick={() =>
+                    mode === "view" ? handleSelectTeam(elem) : null
+                  }
+                >
                   <td>{elem.team_id}</td>
                   <td>{elem.team_name}</td>
                   <td>{elem.short_name}</td>

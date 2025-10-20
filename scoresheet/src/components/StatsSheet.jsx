@@ -165,7 +165,7 @@ export default function StatSheet({
                   key={idx}
                   style={{
                     opacity: lesthan ? 0.6 : 1,
-                    backgroundColor: lesthan ? "#ffb5b55a" : "transparent",
+                    backgroundColor: lesthan ? "#5858585a" : "transparent",
                   }}
                 >
                   {Object.keys(row).map((field) => {
@@ -191,6 +191,7 @@ export default function StatSheet({
                     return (
                       <td key={field}>
                         <input
+                          className="input-field"
                           disabled={
                             (field === "firstquarter" && periodLock >= 2) ||
                             (field === "secquarter" && periodLock >= 3) ||

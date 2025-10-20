@@ -5,6 +5,7 @@
   width: auto;
   font-size: 200px;
   gap: 10px;
+  place-items: center
 }
 
 .TimerDiv {
@@ -24,15 +25,11 @@
 
 .ShootClockCon {
   width: 4vw;
-  /* background-color: rgb(255, 255, 255); */
-  padding: 10px;
   box-sizing: border-box;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
   border-radius: 5px;
-  gap: 2px;
   font-size: 12px;
 }
 

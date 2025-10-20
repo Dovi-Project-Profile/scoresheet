@@ -142,7 +142,7 @@ const TimerCom = () => {
           />
         )}
       </div>
-      <div className="ShootClockCon" style={{ gridColumn: "span 1" }}>
+      <div className="ShootClockCon">
         {isShotClockDone ? (
           <input
             style={{

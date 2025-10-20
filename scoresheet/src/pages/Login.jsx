@@ -1,39 +1,23 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../supabaseClient";
+import { useLoginDebounced } from "../hooks/useLoginDebounced";
+import "../components/buttonStyles.css"
 
 export const Login = () => {
   const navigate = useNavigate();
   const [credential, setCredential] = useState({ userName: "", password: "" });
+  const { login, loading } = useLoginDebounced(300); // 700ms debounce
 
   const handleCredential = (key, value) => {
     setCredential((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleLoginNav = async () => {
-    const { userName, password } = credential;
-
-    if (!userName || !password) {
-      alert("Please enter both username and password.");
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from("tbl_user_access")
-      .select("*")
-      .eq("user_name", userName)
-      .eq("user_password", password)
-      .single();
-
-    if (error || !data) {
-      alert("Login Failed: Credentials Incorrect.");
-      console.error("Login error:", error);
-      return;
-    }
-
-    localStorage.setItem("sessionUser", JSON.stringify(data));
-    window.dispatchEvent(new Event("authChanged"));
-    navigate("/adminIndex");
+  const handleLoginNav = () => {
+    login(
+      credential,
+      () => navigate("/adminIndex"),
+      (errMsg) => alert(errMsg)
+    );
   };
 
   return (
@@ -45,13 +29,13 @@ export const Login = () => {
         gap: "10px",
       }}
       onSubmit={(e) => {
-        e.preventDefault(); // prevent page reload
+        e.preventDefault();
         handleLoginNav();
       }}
     >
       <b>Login</b>
       <input
-        placeholder="username"
+        placeholder="Username"
         onChange={(e) => handleCredential("userName", e.target.value)}
       />
       <input
@@ -59,8 +43,8 @@ export const Login = () => {
         type="password"
         onChange={(e) => handleCredential("password", e.target.value)}
       />
-      <button id="GeneralBttn" type="submit">
-        Login
+      <button id="LoginBttn" type="submit" disabled={loading}>
+        {loading ? <span className="loader"></span> : "Login"}
       </button>
     </form>
   );

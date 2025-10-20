@@ -263,7 +263,8 @@ body {
 }
 
 nav {
-  padding: 0px 15px;
+  /* padding: 0px 15px; */
+  background-color: #ffffff;
 }
 
 
@@ -272,7 +273,6 @@ nav a {
   color: #141a27;
   margin: 5px;
   display: inline-block;
-  
 }
 
 nav a:hover{

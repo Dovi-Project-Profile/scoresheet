@@ -1,0 +1,25 @@
+.tableStyle {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tableStyle th,
+.tableStyle td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+/* Zebra striping effect */
+.tableStyle tbody tr:nth-child(odd) {
+  background-color: #ffffff; /* white rows */
+}
+
+.tableStyle tbody tr:nth-child(even) {
+  background-color: #f7f7f7; /* light gray rows */
+}
+
+/* Optional: highlight on hover */
+.tableStyle tbody tr:hover {
+  background-color: #eaeaea;
+}
