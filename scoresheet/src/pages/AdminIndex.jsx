@@ -2,6 +2,7 @@
 import { AdminPage } from "../components/admin-page/AdminPage";
 import { TeamForm } from "../components/admin-page/TeamForm";
 import { PlayerForm } from "../components/admin-page/PlayerForm";
+import { useRegions } from "../components/admin-page/RegionsAPI";
 // import { AutoLogout } from "../components/AutoLogout";
 
 const AdminIndex = () => {
@@ -16,13 +17,13 @@ const AdminIndex = () => {
   //   const shouldAutoLogout = location.pathname === "/adminIndex";
 
   //   console.log(location.pathname);
-
+  const { regions } = useRegions();
   return (
     <div style={{ boxSizing: "border-box" }}>
       {/* {shouldAutoLogout && <AutoLogout handleLogout={handleLogout} />} */}
       <AdminPage />
-      <TeamForm />
-      <PlayerForm />
+      <TeamForm regions={regions} />
+      <PlayerForm regions={regions} />
     </div>
   );
 };

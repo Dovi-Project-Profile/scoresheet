@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
 import "./AdminStyles.css";
-import { useRegions } from "./RegionsAPI";
+// import { useRegions } from "./RegionsAPI";
 // import { useDebouncer } from "../../hooks/useDebouncer";
 
-export const PlayerForm = () => {
+export const PlayerForm = ({regions}) => {
   const INITIAL_FROM = {
     player_id: null,
     first_name: "",
@@ -23,7 +23,7 @@ export const PlayerForm = () => {
   const [selectedRegionCode, setSelectedRegionCode] = useState("");
   const [form, setForm] = useState(INITIAL_FROM);
   // Load regions
-  const { regions } = useRegions();
+  // const { regions } = useRegions();
 
   // Load cities when region changes
   useEffect(() => {

@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
 import "./AdminStyles.css";
 import { useDebouncer } from "../../hooks/useDebouncer";
-import { useRegions } from "./RegionsAPI";
+// import { useRegions } from "./RegionsAPI";
 
-export const TeamForm = () => {
+export const TeamForm = ({regions}) => {
   const INITIAL_FROM = {
     team_id: null,
     team_name: "",
@@ -23,18 +23,7 @@ export const TeamForm = () => {
   const [selectedRegionCode, setSelectedRegionCode] = useState("");
   const [mode, setMode] = useState("view"); // view, edit, new
   // Load regions
-  const { regions } = useRegions();
-
-  // // Load regions
-  // useEffect(() => {
-  //   fetch(`https://psgc.gitlab.io/api/regions.json`)
-  //     .then((res) => {
-  //       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-  //       return res.json();
-  //     })
-  //     .then((data) => setRegions(data))
-  //     .catch((err) => console.error("Error loading regions:", err));
-  // }, []);
+  // const { regions } = useRegions();
 
   // Load cities when region changes
   useEffect(() => {
