@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../../supabaseClient";
+// import { supabase } from "../../supabaseClient";
 import "./AdminStyles.css";
+import { fetchCities } from "./fetchFunctions";
 // import { useRegions } from "./RegionsAPI";
 // import { useDebouncer } from "../../hooks/useDebouncer";
 
-export const PlayerForm = ({regions}) => {
-  const INITIAL_FROM = {
+export const PlayerForm = ({ regions, teams }) => {
+  const INITIAL_PLAYER_INFO = {
     player_id: null,
     first_name: "",
     middle_name: "",
@@ -21,34 +22,18 @@ export const PlayerForm = ({regions}) => {
   };
   const [cities, setCities] = useState([]);
   const [selectedRegionCode, setSelectedRegionCode] = useState("");
-  const [form, setForm] = useState(INITIAL_FROM);
-  // Load regions
-  // const { regions } = useRegions();
+  const [playerInfo, setPlayerInfo] = useState(INITIAL_PLAYER_INFO);
 
-  // Load cities when region changes
   useEffect(() => {
     if (!selectedRegionCode) {
       setCities([]);
-      // handleChangeForm("city", "");
       return;
     }
-
-    fetch(
-      `https://psgc.gitlab.io/api/regions/${selectedRegionCode}/cities-municipalities.json`
-    )
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        setCities(data);
-        // handleChangeForm("city", "");
-      })
-      .catch((err) => console.error("Error loading cities:", err));
+    fetchCities({ selectedRegionCode }).then(setCities).catch(console.error);
   }, [selectedRegionCode]);
 
   const handleChangeForm = (key, value) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
+    setPlayerInfo((prev) => ({ ...prev, [key]: value }));
   };
 
   return (
@@ -86,28 +71,33 @@ export const PlayerForm = ({regions}) => {
         <input />
         <label>Team</label>
         <select>
-          <option value=""></option>
+          <option value={""}></option>
+          {teams.map((elem, index) => (
+            <option key={elem.team_id + index} value={elem.team_id}>
+              {elem.team_name}
+            </option>
+          ))}
         </select>
         <label>Role/Position</label>
         <select>
           <option value=""></option>
-          <option>PG</option>
-          <option>SG</option>
-          <option>SF</option>
-          <option>PF</option>
-          <option>C</option>
+          <option value="PG">PG</option>
+          <option value="SG">SG</option>
+          <option value="SF">SF</option>
+          <option value="PF">PF</option>
+          <option value="C">C</option>
         </select>
         <label>Birthdate</label>
-        <input type="date" />
+        <input type="date" max={new Date().toISOString().split("T")[0]} />
         <label>Age</label>
         <input />
-        <label>Height</label>
+        <label>Height cm</label>
         <input />
-        <label>Weight</label>
+        <label>Weight kg</label>
         <input />
         <label>Region</label>
         <select
-          value={regions.find((r) => r.name === form.region)?.code || ""}
+          value={regions.find((r) => r.name === playerInfo.region)?.code || ""}
           onChange={(e) => {
             const selectedCode = e.target.value;
             const selectedRegion = regions.find(
@@ -130,8 +120,8 @@ export const PlayerForm = ({regions}) => {
         </select>
         <label>Hometown</label>
         <select
-          disabled={cities.length === 0 || !form.region}
-          value={form.city}
+          disabled={cities.length === 0 || !playerInfo.region}
+          value={playerInfo.city}
           onChange={(e) => handleChangeForm("city", e.target.value)}
         >
           <option value=""></option>

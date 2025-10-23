@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { supabase } from "../../supabaseClient";
 
 let cachedRegions = null;
 
@@ -27,4 +28,31 @@ export const useRegions = () => {
   }, []);
 
   return { regions, isLoading };
+};
+
+export const fetchCities = async ({ selectedRegionCode }) => {
+  try {
+    const res = await fetch(
+      `https://psgc.gitlab.io/api/regions/${selectedRegionCode}/cities-municipalities.json`
+    );
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    return await res.json();
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export const fetchTeams = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("tbl_local_team")
+      .select("*")
+      .order("team_id", { ascending: true });
+
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    console.error("Error fetching teams:", err.message);
+  }
 };

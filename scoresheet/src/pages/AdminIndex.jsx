@@ -2,28 +2,42 @@
 import { AdminPage } from "../components/admin-page/AdminPage";
 import { TeamForm } from "../components/admin-page/TeamForm";
 import { PlayerForm } from "../components/admin-page/PlayerForm";
-import { useRegions } from "../components/admin-page/RegionsAPI";
-// import { AutoLogout } from "../components/AutoLogout";
+import {
+  fetchTeams,
+  useRegions,
+} from "../components/admin-page/fetchFunctions";
+import { useCallback, useEffect, useState } from "react";
 
 const AdminIndex = () => {
-  //   const navigate = useNavigate();
-  //   const location = useLocation();
-
-  //   const handleLogout = () => {
-  //     localStorage.removeItem("sessionUser");
-  //     navigate("/login");
-  //   };
-
-  //   const shouldAutoLogout = location.pathname === "/adminIndex";
-
-  //   console.log(location.pathname);
   const { regions } = useRegions();
+  const [teams, setTeams] = useState([]);
+  const [isTeamsLoading, setIsTeamsLoading] = useState(true);
+
+  const fetchData = useCallback(async () => {
+    try {
+      setIsTeamsLoading(true);
+      const data = await fetchTeams(); // this calls your API
+      setTeams(data || []);
+    } catch (error) {
+      console.error("Error fetching teams:", error);
+    } finally {
+      setIsTeamsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
   return (
     <div style={{ boxSizing: "border-box" }}>
-      {/* {shouldAutoLogout && <AutoLogout handleLogout={handleLogout} />} */}
       <AdminPage />
-      <TeamForm regions={regions} />
-      <PlayerForm regions={regions} />
+      <TeamForm
+        regions={regions}
+        teams={teams}
+        isTeamsLoading={isTeamsLoading}
+        refreshTeams={fetchData}
+      />
+      <PlayerForm regions={regions} teams={teams} />
     </div>
   );
 };

@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
 import "./AdminStyles.css";
 import { useDebouncer } from "../../hooks/useDebouncer";
-// import { useRegions } from "./RegionsAPI";
+import { fetchCities } from "./fetchFunctions";
 
-export const TeamForm = ({regions}) => {
+export const TeamForm = ({ regions, teams, isTeamsLoading, refreshTeams }) => {
   const INITIAL_FROM = {
     team_id: null,
     team_name: "",
@@ -16,14 +16,12 @@ export const TeamForm = ({regions}) => {
     founded_date: "",
   };
   const [form, setForm] = useState(INITIAL_FROM);
-  const [teams, setTeams] = useState([]);
-  const [loading, setLoading] = useState(true);
-  // const [regions, setRegions] = useState([]);
+  // const [teams, setTeams] = useState([]);
+  // const [loading, setLoading] = useState(true);
   const [cities, setCities] = useState([]);
   const [selectedRegionCode, setSelectedRegionCode] = useState("");
   const [mode, setMode] = useState("view"); // view, edit, new
   // Load regions
-  // const { regions } = useRegions();
 
   // Load cities when region changes
   useEffect(() => {
@@ -32,43 +30,24 @@ export const TeamForm = ({regions}) => {
       handleChangeForm("city", "");
       return;
     }
-
-    fetch(
-      `https://psgc.gitlab.io/api/regions/${selectedRegionCode}/cities-municipalities.json`
-    )
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        setCities(data);
-        // handleChangeForm("city", "");
-      })
-      .catch((err) => console.error("Error loading cities:", err));
+    fetchCities({ selectedRegionCode }).then(setCities).catch(console.error);
   }, [selectedRegionCode]);
 
-  // Fetch all teams
-  const fetchTeams = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from("tbl_local_team")
-        .select("*")
-        .order("team_id", { ascending: true });
-
-      if (error) throw error;
-      setTeams(data || []);
-    } catch (err) {
-      console.error("Error fetching teams:", err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // fetch team data
+  // const fetchData = async () => {
+  //   try {
+  //     let data = await fetchTeams();
+  //     setTeams(data || []);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   // Load data on mount
-  useEffect(() => {
-    fetchTeams();
-  }, []);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   const capitalizeWords = (text = "") =>
     text.replace(/\b\w/g, (char) => char.toUpperCase());
@@ -106,7 +85,8 @@ export const TeamForm = ({regions}) => {
         if (error) throw error;
 
         alert("Team successfully updated!");
-        await fetchTeams(); // refresh your table after update
+        // fetchData(); // refresh your table after update
+        await refreshTeams();
         setMode("view");
         setForm(INITIAL_FROM);
       } catch (err) {
@@ -140,7 +120,8 @@ export const TeamForm = ({regions}) => {
         if (error) throw error;
 
         alert("Team successfully added!");
-        await fetchTeams();
+        // await fetchTeams();
+        await refreshTeams();
         setMode("view");
         setForm(INITIAL_FROM);
       } catch (err) {
@@ -261,6 +242,7 @@ export const TeamForm = ({regions}) => {
         <input
           disabled={mode === "view"}
           type="date"
+          max={new Date().toISOString().split("T")[0]}
           value={form.founded_date}
           onChange={(e) => handleChangeForm("founded_date", e.target.value)}
         />
@@ -297,7 +279,7 @@ export const TeamForm = ({regions}) => {
         </div>
       </form>
       {/* Table Section */}
-      {loading ? (
+      {isTeamsLoading ? (
         <p>Loading team data...</p>
       ) : (
         <div
