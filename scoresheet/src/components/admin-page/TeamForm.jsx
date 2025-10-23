@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
 import "./AdminStyles.css";
 import { useDebouncer } from "../../hooks/useDebouncer";
+import { useRegions } from "./RegionsAPI";
 
 export const TeamForm = () => {
   const INITIAL_FROM = {
@@ -17,21 +18,23 @@ export const TeamForm = () => {
   const [form, setForm] = useState(INITIAL_FROM);
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [regions, setRegions] = useState([]);
+  // const [regions, setRegions] = useState([]);
   const [cities, setCities] = useState([]);
   const [selectedRegionCode, setSelectedRegionCode] = useState("");
   const [mode, setMode] = useState("view"); // view, edit, new
-
   // Load regions
-  useEffect(() => {
-    fetch("https://psgc.gitlab.io/api/regions/")
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        return res.json();
-      })
-      .then((data) => setRegions(data))
-      .catch((err) => console.error("Error loading regions:", err));
-  }, []);
+  const { regions } = useRegions();
+
+  // // Load regions
+  // useEffect(() => {
+  //   fetch(`https://psgc.gitlab.io/api/regions.json`)
+  //     .then((res) => {
+  //       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+  //       return res.json();
+  //     })
+  //     .then((data) => setRegions(data))
+  //     .catch((err) => console.error("Error loading regions:", err));
+  // }, []);
 
   // Load cities when region changes
   useEffect(() => {
@@ -41,16 +44,15 @@ export const TeamForm = () => {
       return;
     }
 
-    fetch("https://psgc.gitlab.io/api/cities/")
+    fetch(
+      `https://psgc.gitlab.io/api/regions/${selectedRegionCode}/cities-municipalities.json`
+    )
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         return res.json();
       })
       .then((data) => {
-        const filtered = data.filter(
-          (city) => city.regionCode === selectedRegionCode
-        );
-        setCities(filtered);
+        setCities(data);
         // handleChangeForm("city", "");
       })
       .catch((err) => console.error("Error loading cities:", err));
@@ -166,23 +168,9 @@ export const TeamForm = () => {
   };
 
   return (
-    <div>
+    <div className="teamWrapper">
       {/* Form Section */}
-      <form
-        onSubmit={(e) => e.preventDefault()}
-        style={{
-          display: "grid",
-          alignItems: "flex-start",
-          justifyContent: "start",
-          gridTemplateColumns: "auto auto auto auto",
-          gap: "10px",
-          padding: "20px",
-          backgroundColor: "#f0f0f0",
-          borderRadius: "10px",
-          width: "fit-content",
-          marginBottom: "20px",
-        }}
-      >
+      <form className="teamForm" onSubmit={(e) => e.preventDefault()}>
         <b
           style={{
             borderBottom: "1px solid black",
@@ -267,7 +255,7 @@ export const TeamForm = () => {
           ))}
         </select>
 
-        <label>City</label>
+        <label>City / Municipalities</label>
         <select
           disabled={cities.length === 0 || !form.team_state || mode === "view"}
           value={form.city}
@@ -346,7 +334,6 @@ export const TeamForm = () => {
               }}
             >
               <tr>
-                <th>ID</th>
                 <th>Team Name</th>
                 <th>Short Name</th>
                 <th>Owner</th>
@@ -365,7 +352,6 @@ export const TeamForm = () => {
                     mode === "view" ? handleSelectTeam(elem) : null
                   }
                 >
-                  <td>{elem.team_id}</td>
                   <td>{elem.team_name}</td>
                   <td>{elem.short_name}</td>
                   <td>{elem.team_owner}</td>

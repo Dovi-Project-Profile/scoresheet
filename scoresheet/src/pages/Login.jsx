@@ -6,7 +6,7 @@ import "../components/buttonStyles.css"
 export const Login = () => {
   const navigate = useNavigate();
   const [credential, setCredential] = useState({ userName: "", password: "" });
-  const { login, loading } = useLoginDebounced(300); // 700ms debounce
+  const { login, loading, loginMessage } = useLoginDebounced(300); // 700ms debounce
 
   const handleCredential = (key, value) => {
     setCredential((prev) => ({ ...prev, [key]: value }));
@@ -21,19 +21,14 @@ export const Login = () => {
   };
 
   return (
-    <form
-      style={{
-        display: "grid",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "10px",
-      }}
+    <form className="formStyle"
       onSubmit={(e) => {
         e.preventDefault();
         handleLoginNav();
       }}
     >
       <b>Login</b>
+      {loginMessage&&<text className="loginMessage">{loginMessage}</text>}
       <input
         placeholder="Username"
         onChange={(e) => handleCredential("userName", e.target.value)}

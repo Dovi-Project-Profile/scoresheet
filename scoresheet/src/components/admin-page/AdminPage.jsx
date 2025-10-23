@@ -17,7 +17,7 @@ export const AdminPage = () => {
   }, []);
 
   return (
-    <div style={{ position: "absolute", right: "1%", top: "0" }}>
+    <div className="adminDiv">
       {session && (
         <p>
           Welcome, <strong>{session.user_name}!</strong>

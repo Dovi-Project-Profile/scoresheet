@@ -89,7 +89,6 @@ export const Scoreboard = () => {
 
   return (
     <div className="App">
-      {/* <Login /> */}
       <div className="ScoreWrapper">
         <TimerCom />
         <div className="MainDiv">

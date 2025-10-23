@@ -67,3 +67,19 @@
         transform: rotate(360deg);
     }
 }
+.loginMessage {
+    background-color: lightcoral;
+    color: maroon;
+    width: 8vw;
+    height: auto;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.formStyle {
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
