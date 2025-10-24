@@ -28,6 +28,7 @@ const AdminIndex = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
   return (
     <div style={{ boxSizing: "border-box" }}>
       <AdminPage />

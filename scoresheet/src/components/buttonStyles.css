@@ -78,8 +78,13 @@
 }
 
 .formStyle {
+    border: 1px solid #6d6d6d75;
+        border-radius: 5px;
+        padding: 20px;
+        width: fit-content;
     display: grid;
     align-items: center;
     justify-content: center;
     gap: 10px;
+    background-color: rgba(199, 199, 199, 0.068);
 }

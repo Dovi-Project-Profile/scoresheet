@@ -33,21 +33,6 @@ export const TeamForm = ({ regions, teams, isTeamsLoading, refreshTeams }) => {
     fetchCities({ selectedRegionCode }).then(setCities).catch(console.error);
   }, [selectedRegionCode]);
 
-  // fetch team data
-  // const fetchData = async () => {
-  //   try {
-  //     let data = await fetchTeams();
-  //     setTeams(data || []);
-  //     setLoading(false);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  // Load data on mount
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
 
   const capitalizeWords = (text = "") =>
     text.replace(/\b\w/g, (char) => char.toUpperCase());
@@ -225,7 +210,7 @@ export const TeamForm = ({ regions, teams, isTeamsLoading, refreshTeams }) => {
           ))}
         </select>
 
-        <label>City / Municipalities</label>
+        <label>City-Municipalities</label>
         <select
           disabled={cities.length === 0 || !form.team_state || mode === "view"}
           value={form.city}
@@ -310,7 +295,7 @@ export const TeamForm = ({ regions, teams, isTeamsLoading, refreshTeams }) => {
                 <th>Owner</th>
                 <th>Coach</th>
                 <th>Region</th>
-                <th>City</th>
+                <th>City-Municipalities</th>
                 <th>Founded</th>
               </tr>
             </thead>

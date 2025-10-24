@@ -56,3 +56,23 @@ export const fetchTeams = async () => {
     console.error("Error fetching teams:", err.message);
   }
 };
+
+export const fetchPlayers = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("tbl_local_players")
+      .select(
+        `*,
+        tbl_local_team (
+            team_name,
+            short_name
+            )`
+      )
+      .order("player_id", { ascending: true });
+
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    console.error("Error fetching players list:", err.message);
+  }
+};
