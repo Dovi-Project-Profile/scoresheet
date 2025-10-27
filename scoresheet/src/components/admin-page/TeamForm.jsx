@@ -15,9 +15,8 @@ export const TeamForm = ({ regions, teams, isTeamsLoading, refreshTeams }) => {
     city: "",
     founded_date: "",
   };
+  const [selectedRow, setSelectedRow] = useState(null);
   const [form, setForm] = useState(INITIAL_FROM);
-  // const [teams, setTeams] = useState([]);
-  // const [loading, setLoading] = useState(true);
   const [cities, setCities] = useState([]);
   const [selectedRegionCode, setSelectedRegionCode] = useState("");
   const [mode, setMode] = useState("view"); // view, edit, new
@@ -33,7 +32,6 @@ export const TeamForm = ({ regions, teams, isTeamsLoading, refreshTeams }) => {
     fetchCities({ selectedRegionCode }).then(setCities).catch(console.error);
   }, [selectedRegionCode]);
 
-
   const capitalizeWords = (text = "") =>
     text.replace(/\b\w/g, (char) => char.toUpperCase());
 
@@ -41,7 +39,8 @@ export const TeamForm = ({ regions, teams, isTeamsLoading, refreshTeams }) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleSelectTeam = (elem) => {
+  const handleSelectTeam = (elem, index) => {
+    setSelectedRow(index);
     setForm(elem);
     const region = regions.find((r) => r.name === elem.team_state);
     setSelectedRegionCode(region ? region.code : "");
@@ -137,16 +136,11 @@ export const TeamForm = ({ regions, teams, isTeamsLoading, refreshTeams }) => {
           Register Team
           {(form.team_id || mode === "new") && (
             <button
-              style={{
-                width: "fit-content",
-                justifySelf: "end",
-                cursor: "pointer",
-                gridColumn: "4",
-                border: "transparent",
-              }}
+              className="clearBttn"
               onClick={() => {
                 setForm(INITIAL_FROM);
                 setMode("view");
+                setSelectedRow(null);
               }}
             >
               {mode === "view" ? "Clear" : "Cancel"}
@@ -267,28 +261,9 @@ export const TeamForm = ({ regions, teams, isTeamsLoading, refreshTeams }) => {
       {isTeamsLoading ? (
         <p>Loading team data...</p>
       ) : (
-        <div
-          style={{
-            maxHeight: "300px",
-            overflowY: "auto",
-            border: "1px solid #ccc",
-            width: "fit-content",
-          }}
-        >
-          <table
-            className="tableStyle"
-            border="1"
-            cellPadding="8"
-            style={{ borderCollapse: "collapse" }}
-          >
-            <thead
-              style={{
-                backgroundColor: "#f0f0f0",
-                position: "sticky",
-                top: 0,
-                zIndex: 2,
-              }}
-            >
+        <div className="tableWrapper">
+          <table className="tableStyle" border="1" cellPadding="8">
+            <thead>
               <tr>
                 <th>Team Name</th>
                 <th>Short Name</th>
@@ -302,11 +277,14 @@ export const TeamForm = ({ regions, teams, isTeamsLoading, refreshTeams }) => {
             <tbody>
               {teams.map((elem, index) => (
                 <tr
-                  style={{ cursor: "pointer" }}
                   key={elem.team_id + index}
                   onClick={() =>
-                    mode === "view" ? handleSelectTeam(elem) : null
+                    mode === "view" ? handleSelectTeam(elem, index) : null
                   }
+                  style={{
+                    backgroundColor:
+                      selectedRow === index ? "#8fbaff" : "transparent",
+                  }}
                 >
                   <td>{elem.team_name}</td>
                   <td>{elem.short_name}</td>

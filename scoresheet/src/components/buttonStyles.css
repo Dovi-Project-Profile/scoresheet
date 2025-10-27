@@ -68,6 +68,7 @@
     }
 }
 .loginMessage {
+    font-size: smaller;
     background-color: lightcoral;
     color: maroon;
     width: 8vw;

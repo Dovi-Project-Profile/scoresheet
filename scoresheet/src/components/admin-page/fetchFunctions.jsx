@@ -43,6 +43,52 @@ export const fetchCities = async ({ selectedRegionCode }) => {
   }
 };
 
+export const fetchCitiesMunicipalities = async () => {
+  try {
+    const res = await fetch(
+      `https://psgc.gitlab.io/api/cities-municipalities.json`
+    );
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+    const data = await res.json();
+
+    // Transform and clean names
+    const transformedData = data.map((item) => {
+      let name = item.name.trim();
+
+      // "City of Pasig" → "Pasig City"
+      if (/^City of /i.test(name)) {
+        name = name.replace(/^City of (.*)/i, "$1 City");
+      }
+
+      // "Municipality of Angono" → "Angono"
+      else if (/^Municipality of /i.test(name)) {
+        name = name.replace(/^Municipality of (.*)/i, "$1");
+      }
+
+      // Remove any extra spaces or redundant words
+      name = name.replace(/\s+/g, " ").trim();
+
+      return { ...item, name };
+    });
+
+    // Remove duplicates (based on name, case-insensitive)
+    const uniqueData = [
+      ...new Map(
+        transformedData.map((item) => [item.name.toLowerCase(), item])
+      ).values(),
+    ];
+
+    // Sort alphabetically by name
+    uniqueData.sort((a, b) => a.name.localeCompare(b.name));
+
+    return uniqueData;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 export const fetchTeams = async () => {
   try {
     const { data, error } = await supabase

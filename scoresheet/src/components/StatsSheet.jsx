@@ -270,11 +270,6 @@ export default function StatSheet({
                             if (onChangeBonusHome) onChangeBonusHome(true);
                             if (onChangeBonusAway) onChangeBonusAway(true);
                           }
-                          console.log(
-                            `Team ${teamName.toUpperCase()} Quarter ${
-                              quarterIdx + 1
-                            } foul ${foulIdx + 1} `
-                          );
                         }}
                       />
                     ))}

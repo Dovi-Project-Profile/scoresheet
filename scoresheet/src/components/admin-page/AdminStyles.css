@@ -1,29 +1,43 @@
+.tableWrapper {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  width: fit-content;
+}
 .tableStyle {
   width: 100%;
   border-collapse: collapse;
-}
-
-.tableStyle th,
-.tableStyle td {
   border: 1px solid #ddd;
+}
+.tableStyle thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f0f0f0;
+  z-index: 2;
+}
+.tableStyle td {
   padding: 8px;
   text-align: left;
 }
-
 /* Zebra striping effect */
 .tableStyle tbody tr:nth-child(odd) {
   background-color: #ffffff; /* white rows */
 }
-
 .tableStyle tbody tr:nth-child(even) {
   background-color: #f7f7f7; /* light gray rows */
 }
-
 /* Optional: highlight on hover */
 .tableStyle tbody tr:hover {
   background-color: #eaeaea;
+  cursor: pointer;
 }
-
+.clearBttn {
+  width: fit-content;
+  justify-content: end;
+  cursor: pointer;
+  grid-column: 4;
+  border: transparent;
+}
 .teamForm {
   display: grid;
   align-items: flex-start;
@@ -36,32 +50,27 @@
   width: max-content;
   height: max-content;
 }
-
 .teamWrapper {
   box-sizing: border-box;
   padding-bottom: 20px;
   display: flex;
   gap: 20px;
 }
-
 .teamWrapper> :nth-child(2) {
   margin: 0 auto;
 }
-
 @media (max-width: 1260px) {
   .teamWrapper {
     display: flex;
     flex-direction: column;
   }
 }
-
 .adminDiv {
   position: absolute;
   right: 0%;
   top: 0;
   padding-right: 10px;
 }
-
 @media (max-width: 768px) {
   .adminDiv {
     right: -70%;

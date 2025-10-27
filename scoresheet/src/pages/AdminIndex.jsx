@@ -17,7 +17,7 @@ const AdminIndex = () => {
     try {
       setIsTeamsLoading(true);
       const data = await fetchTeams(); // this calls your API
-      setTeams(data || []);
+      setTeams(data);
     } catch (error) {
       console.error("Error fetching teams:", error);
     } finally {
@@ -38,7 +38,7 @@ const AdminIndex = () => {
         isTeamsLoading={isTeamsLoading}
         refreshTeams={fetchData}
       />
-      <PlayerForm regions={regions} teams={teams} />
+      <PlayerForm teams={teams} />
     </div>
   );
 };

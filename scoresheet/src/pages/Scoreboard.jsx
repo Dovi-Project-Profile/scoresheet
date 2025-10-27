@@ -159,7 +159,6 @@ export const Scoreboard = () => {
                   type="checkbox"
                   onChange={(e) => {
                     setBonusAway(e.target.checked);
-                    console.log("Bonus Away:", e.target.checked);
                   }}
                   checked={bonusAway}
                 />

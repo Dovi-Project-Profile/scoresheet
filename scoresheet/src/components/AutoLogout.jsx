@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
 export const AutoLogout = ({ handleLogout }) => {
-  const timeout = 300000; // inactivity delay before showing modal
+  const inActive = 15; // inactivity delay before showing modal 15mins
+  const multiplier = 60000;
+  const timeout = inActive * multiplier;
   const countdownTime = 10; // countdown seconds
   const [showPrompt, setShowPrompt] = useState(false);
   const [countdown, setCountdown] = useState(countdownTime);
