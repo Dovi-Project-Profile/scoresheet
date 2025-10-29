@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import "./AdminStyles.css";
 import { fetchCitiesMunicipalities, fetchPlayers } from "./fetchFunctions";
 import { supabase } from "../../supabaseClient";
+import { useDebouncer } from "../../hooks/useDebouncer";
 // import { useRegions } from "./RegionsAPI";
 // import { useDebouncer } from "../../hooks/useDebouncer";
 
@@ -25,6 +26,7 @@ export const PlayerForm = ({ teams }) => {
   const [playerInfo, setPlayerInfo] = useState(INITIAL_PLAYER_INFO);
   const [players, setPlayers] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [mode, setMode] = useState("view"); // view, edit, new
 
   useEffect(() => {
     fetchCitiesMunicipalities().then(setCities).catch(console.error);
@@ -38,17 +40,30 @@ export const PlayerForm = ({ teams }) => {
     playersList();
   }, []);
 
+  const cancelRes = () => {
+    const reset = () => {
+      setPlayerInfo(INITIAL_PLAYER_INFO);
+      setSelectedRow(null);
+      setMode("view");
+    };
+    if (mode !== "view") {
+      if (confirm("Are you sure you want to proceed?")) reset();
+    } else {
+      reset();
+    }
+  };
+
   const handleChangeForm = (key, value) => {
     setPlayerInfo((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleplayerInfo = (elem, index) => {
+  const handlePlayerInfo = (elem, index) => {
     setSelectedRow(index);
     setPlayerInfo(elem);
-    console.log(elem);
   };
 
   const handleEditPlayer = async () => {
+    if (mode === "view") return;
     try {
       const { error } = await supabase
         .from("tbl_local_players")
@@ -72,6 +87,7 @@ export const PlayerForm = ({ teams }) => {
       alert("Player successfully updated!");
       playersList();
       setPlayerInfo(INITIAL_PLAYER_INFO);
+      setMode("view");
     } catch (err) {
       console.error("Error updating team:", err.message);
       alert("Failed to update team. Please check the console for details.");
@@ -79,6 +95,7 @@ export const PlayerForm = ({ teams }) => {
   };
 
   const handleAddPlayer = async () => {
+    if (mode === "view") return;
     if (
       playerInfo.player_id ||
       !playerInfo.first_name ||
@@ -106,10 +123,20 @@ export const PlayerForm = ({ teams }) => {
       alert("Player successfully added!");
       playersList();
       setPlayerInfo(INITIAL_PLAYER_INFO);
+      setMode("view");
     } catch (err) {
       console.error("Error inserting team:", err.message);
       alert("Failed to add team. Please check the console for details.");
     }
+  };
+
+  const debouncedEdit = useDebouncer(handleEditPlayer, 300);
+  const debouncedAdd = useDebouncer(handleAddPlayer, 300);
+
+  const handleAddNewPlayer = () => {
+    setMode("new");
+    setPlayerInfo(INITIAL_PLAYER_INFO);
+    setSelectedRow(null);
   };
 
   return (
@@ -121,24 +148,21 @@ export const PlayerForm = ({ teams }) => {
             gridColumn: "1 / span 4",
             display: "flex",
             justifyContent: "space-between",
-          }}
-        >
+          }}>
           Register Player
-          <button
-            className="clearBttn"
-            disabled={false}
-            type="button"
-            onClick={(e) => {
-              e.preventDefault;
-              setPlayerInfo(INITIAL_PLAYER_INFO);
-              setSelectedRow(null);
-            }}
-          >
-            Clear
-          </button>
+          {(playerInfo.player_id || mode === "new") && (
+            <button
+              className="clearBttn"
+              disabled={false}
+              type="button"
+              onClick={cancelRes}>
+              {mode === "view" ? "Clear" : "Cancel"}
+            </button>
+          )}
         </b>
         <label>First Name</label>
         <input
+          disabled={mode === "view"}
           value={playerInfo?.first_name}
           onChange={(e) => {
             handleChangeForm("first_name", e.target.value);
@@ -146,6 +170,7 @@ export const PlayerForm = ({ teams }) => {
         />
         <label>Middle Name</label>
         <input
+          disabled={mode === "view"}
           value={playerInfo?.middle_name}
           onChange={(e) => {
             handleChangeForm("middle_name", e.target.value);
@@ -153,6 +178,7 @@ export const PlayerForm = ({ teams }) => {
         />
         <label>Last Name</label>
         <input
+          disabled={mode === "view"}
           value={playerInfo?.last_name}
           onChange={(e) => {
             handleChangeForm("last_name", e.target.value);
@@ -160,6 +186,8 @@ export const PlayerForm = ({ teams }) => {
         />
         <label>Jersey No.</label>
         <input
+          type="number"
+          disabled={mode === "view"}
           value={playerInfo?.jersey_number}
           onChange={(e) => {
             handleChangeForm("jersey_number", e.target.value);
@@ -167,11 +195,11 @@ export const PlayerForm = ({ teams }) => {
         />
         <label>Team</label>
         <select
+          disabled={mode === "view"}
           value={playerInfo?.team_id ?? ""}
           onChange={(e) => {
             handleChangeForm("team_id", e.target.value);
-          }}
-        >
+          }}>
           <option value={""}></option>
           {teams?.map((elem, index) => (
             <option key={elem.team_id + index} value={elem.team_id}>
@@ -181,11 +209,11 @@ export const PlayerForm = ({ teams }) => {
         </select>
         <label>Position</label>
         <select
+          disabled={mode === "view"}
           value={playerInfo?.position}
           onChange={(e) => {
             handleChangeForm("position", e.target.value);
-          }}
-        >
+          }}>
           <option value=""></option>
           <option value="PG">PG</option>
           <option value="SG">SG</option>
@@ -195,6 +223,7 @@ export const PlayerForm = ({ teams }) => {
         </select>
         <label>Birthdate</label>
         <input
+          disabled={mode === "view"}
           type="date"
           max={new Date().toISOString().split("T")[0]}
           value={playerInfo?.birthdate}
@@ -204,31 +233,43 @@ export const PlayerForm = ({ teams }) => {
         />
         <label>Age</label>
         <input
+          type="number"
+          disabled={mode === "view"}
           value={playerInfo?.age}
           onChange={(e) => {
             handleChangeForm("age", e.target.value);
           }}
         />
-        <label>Height cm</label>
-        <input
-          value={playerInfo?.height_cm}
-          onChange={(e) => {
-            handleChangeForm("height_cm", e.target.value);
-          }}
-        />
-        <label>Weight kg</label>
-        <input
-          value={playerInfo?.weight_kg}
-          onChange={(e) => {
-            handleChangeForm("weight_kg", e.target.value);
-          }}
-        />
+        <div>
+          <label>Height cm~</label>
+          <input
+            style={{ width: "3rem" }}
+            type="number"
+            disabled={mode === "view"}
+            value={playerInfo?.height_cm}
+            onChange={(e) => {
+              handleChangeForm("height_cm", e.target.value);
+            }}
+          />
+        </div>
+        <div>
+          <label>Weight kg~</label>
+          <input
+            style={{ width: "3rem" }}
+            type="number"
+            pattern="[0-9]*"
+            disabled={mode === "view"}
+            value={playerInfo?.weight_kg}
+            onChange={(e) => {
+              handleChangeForm("weight_kg", e.target.value);
+            }}
+          />
+        </div>
         <label>Hometown</label>
         <select
-          disabled={cities.length === 0}
+          disabled={cities.length === 0 || mode === "view"}
           value={playerInfo?.hometown}
-          onChange={(e) => handleChangeForm("hometown", e.target.value)}
-        >
+          onChange={(e) => handleChangeForm("hometown", e.target.value)}>
           <option value=""></option>
           {cities.map((city) => (
             <option key={city.code} value={city.name}>
@@ -241,27 +282,26 @@ export const PlayerForm = ({ teams }) => {
             gridColumn: "3/span 2",
             display: "grid",
             gridTemplateColumns: "auto auto",
-          }}
-        >
+          }}>
           <button
             id="GeneralBttn"
             type="button"
+            disabled={!playerInfo.player_id}
             style={{ borderBottom: "1px solid black" }}
             onClick={() => {
-              handleEditPlayer();
-            }}
-          >
-            Edit
+              mode === "edit" ? debouncedEdit() : setMode("edit");
+            }}>
+            {mode === "view" ? "Edit" : "Save edit"}
           </button>
           <button
+            disabled={mode === "edit"}
             id="GeneralBttn"
             type="button"
             style={{ borderBottom: "1px solid black" }}
             onClick={() => {
-              handleAddPlayer();
-            }}
-          >
-            Add Player
+              mode === "new" ? debouncedAdd() : handleAddNewPlayer();
+            }}>
+            {mode === "new" ? "Save player" : "New player"}
           </button>
         </div>
       </form>
@@ -287,12 +327,13 @@ export const PlayerForm = ({ teams }) => {
               {players.map((elem, index) => (
                 <tr
                   key={elem.player_id + index}
-                  onClick={() => handleplayerInfo(elem, index)}
+                  onClick={() =>
+                    mode === "view" ? handlePlayerInfo(elem, index) : null
+                  }
                   style={{
                     backgroundColor:
                       selectedRow === index ? "#8fbaff" : "transparent",
-                  }}
-                >
+                  }}>
                   <td>{elem.first_name}</td>
                   <td>{elem.middle_name}</td>
                   <td>{elem.last_name}</td>
