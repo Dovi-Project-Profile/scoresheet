@@ -122,3 +122,19 @@ export const fetchPlayers = async () => {
     console.error("Error fetching players list:", err.message);
   }
 };
+
+export const fetchPlayerStats = async (playerId) => {
+  try {
+    const { data, error } = await supabase
+      .from("vw_stats_player_played_team")
+      .select("*")
+      .eq("player_id", playerId);
+
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    console.error("Error fetching player stats:", err.message);
+    return [];
+  }
+};
+

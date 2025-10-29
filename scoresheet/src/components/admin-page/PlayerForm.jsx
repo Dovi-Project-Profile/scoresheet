@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 // import { supabase } from "../../supabaseClient";
 import "./AdminStyles.css";
-import { fetchCitiesMunicipalities, fetchPlayers } from "./fetchFunctions";
+import {
+  fetchCitiesMunicipalities,
+  fetchPlayers,
+  fetchPlayerStats,
+} from "./fetchFunctions";
 import { supabase } from "../../supabaseClient";
 import { useDebouncer } from "../../hooks/useDebouncer";
 // import { useRegions } from "./RegionsAPI";
@@ -27,6 +31,9 @@ export const PlayerForm = ({ teams }) => {
   const [players, setPlayers] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
   const [mode, setMode] = useState("view"); // view, edit, new
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
+  const [playerStats, setPlayerStats] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     fetchCitiesMunicipalities().then(setCities).catch(console.error);
@@ -139,6 +146,20 @@ export const PlayerForm = ({ teams }) => {
     setSelectedRow(null);
   };
 
+  const handleViewStats = async () => {
+    setSelectedPlayer(playerInfo);
+
+    const stats = await fetchPlayerStats(playerInfo.player_id);
+    setPlayerStats(stats);
+
+    setIsModalOpen(true); // open your modal
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedPlayer(null);
+  };
+
   return (
     <div className="teamWrapper">
       <form className="teamForm">
@@ -240,7 +261,12 @@ export const PlayerForm = ({ teams }) => {
             handleChangeForm("age", e.target.value);
           }}
         />
-        <div>
+        <div
+          style={{
+            gridColumn: "1/span 2",
+            display: "grid",
+            gridTemplateColumns: "repeat(4, auto)",
+          }}>
           <label>Height cm~</label>
           <input
             style={{ width: "3rem" }}
@@ -251,8 +277,8 @@ export const PlayerForm = ({ teams }) => {
               handleChangeForm("height_cm", e.target.value);
             }}
           />
-        </div>
-        <div>
+          {/* </div> */}
+          {/* <div> */}
           <label>Weight kg~</label>
           <input
             style={{ width: "3rem" }}
@@ -277,6 +303,17 @@ export const PlayerForm = ({ teams }) => {
             </option>
           ))}
         </select>
+        {playerInfo.player_id && mode === "view" && (
+          <button
+            style={{
+              gridColumn: "2",
+            }}
+            id="GeneralBttn"
+            type="button"
+            onClick={handleViewStats}>
+            View Stats
+          </button>
+        )}
         <div
           style={{
             gridColumn: "3/span 2",
@@ -287,7 +324,7 @@ export const PlayerForm = ({ teams }) => {
             id="GeneralBttn"
             type="button"
             disabled={!playerInfo.player_id}
-            style={{ borderBottom: "1px solid black" }}
+            // style={{ borderBottom: "1px solid black" }}
             onClick={() => {
               mode === "edit" ? debouncedEdit() : setMode("edit");
             }}>
@@ -297,7 +334,7 @@ export const PlayerForm = ({ teams }) => {
             disabled={mode === "edit"}
             id="GeneralBttn"
             type="button"
-            style={{ borderBottom: "1px solid black" }}
+            // style={{ borderBottom: "1px solid black" }}
             onClick={() => {
               mode === "new" ? debouncedAdd() : handleAddNewPlayer();
             }}>
@@ -305,7 +342,7 @@ export const PlayerForm = ({ teams }) => {
           </button>
         </div>
       </form>
-      {players.length && (
+      {!players.length ? null : (
         <div className="tableWrapper">
           <table className="tableStyle" border="1" cellPadding="8">
             <thead>
@@ -349,6 +386,55 @@ export const PlayerForm = ({ teams }) => {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+      {isModalOpen && selectedPlayer && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={closeModal}>
+              &times;
+            </button>
+            <h2>
+              {selectedPlayer.last_name} {selectedPlayer.first_name},{" "}
+              {selectedPlayer.middle_name}
+            </h2>
+            {!playerStats.length && <i>No Data</i>}
+            <table>
+              <thead>
+                <tr>
+                  <th>Season</th>
+                  <th>Team</th>
+                  <th>Points</th>
+                  <th>Total minutes played</th>
+                </tr>
+              </thead>
+              <tbody>
+                {playerStats.map((stat) => (
+                  <tr key={stat.season_year + stat.team_name}>
+                    <td>{stat.season_year}</td>
+                    <td>{stat.team_name}</td>
+                    <td>{stat.total_points}</td>
+                    <td>{stat.total_minutes}</td>
+                  </tr>
+                ))}
+                <tr style={{ fontWeight: "bolder" }}>
+                  <td colSpan="2">Total</td>
+                  <td>
+                    {playerStats.reduce(
+                      (sum, stat) => sum + (stat.total_points || 0),
+                      0
+                    )}
+                  </td>
+                  <td>
+                    {playerStats.reduce(
+                      (sum, stat) => sum + (stat.total_minutes || 0),
+                      0
+                    )}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>
