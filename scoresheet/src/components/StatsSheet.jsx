@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./StatsSheet.css";
 import "../TimerStyle.css";
 import "./buttonStyles.css";
 import Alert from "../assets/Buzzer";
 
 const headerColor = "#283344";
-const foulBgColor = "#252e3f"
+const foulBgColor = "#252e3f";
 
 export default function StatSheet({
   teamName,
@@ -17,7 +17,7 @@ export default function StatSheet({
   const createEmptyRow = () => ({
     no: "",
     player: "",
-    fouls: "",
+    fouls: 0,
     firstquarter: "",
     secquarter: "",
     thirdquarter: "",
@@ -25,8 +25,27 @@ export default function StatSheet({
     total: "",
   });
 
+  const playersList = [
+    "LeBron James",
+    "Stephen Curry",
+    "Kevin Durant",
+    "Giannis Antetokounmpo",
+    "Luka Doncic",
+  ];
+
   const [data, setData] = useState(Array.from({ length: 12 }, createEmptyRow));
   const [playBuzzer, setPlayBuzzer] = useState(false);
+
+  const [userInfo, setUserInfo] = useState(null);
+
+  useEffect(() => {
+    // check current stored session
+    const storedUser = localStorage.getItem("sessionUser");
+    setUserInfo(JSON.parse(storedUser));
+  }, []);
+  // next move is to validate if there are session user before fetching the
+  // list of player base on the team selected
+  console.log(userInfo);
 
   const handleChange = (index, field, value) => {
     const newData = [...data];
@@ -76,19 +95,21 @@ export default function StatSheet({
 
   const exportToCSV = () => {
     if (confirm(`Export stats for ${teamName.toUpperCase()}?`)) {
-        const headers = Object.keys(data[0]);
-        const rows = data.map((row) =>
-          headers.map((h) => JSON.stringify(row[h] ?? ""))
-        );
-        const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+      const headers = Object.keys(data[0]);
+      const rows = data.map((row) =>
+        headers.map((h) => JSON.stringify(row[h] ?? ""))
+      );
+      const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join(
+        "\n"
+      );
 
-        const blob = new Blob([csv], { type: "text/csv" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `statsheet_team_${teamName.toUpperCase()}.csv`;
-        a.click();
-        URL.revokeObjectURL(url);
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `statsheet_team_${teamName.toUpperCase()}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
     }
   };
 
@@ -101,20 +122,24 @@ export default function StatSheet({
             alignItems: "center",
             display: "flex",
             gap: "1rem",
-          }}
-        >
-         
-          <button id="GeneralBttn" style={{
-            cursor: data.length >= 20 && "not-allowed",
-          }}
-            onClick={addPlayer} disabled={data.length >= 20} >
+          }}>
+          <button
+            id="GeneralBttn"
+            style={{
+              cursor: data.length >= 20 && "not-allowed",
+            }}
+            onClick={addPlayer}
+            disabled={data.length >= 20}>
             Add Player
           </button>
-         
-          <button id="GeneralBttn" style={{
-            cursor: data.length === 12 && "not-allowed",
-          }}
-          onClick={removePlayer} disabled={data.length <= 12}>
+
+          <button
+            id="GeneralBttn"
+            style={{
+              cursor: data.length === 12 && "not-allowed",
+            }}
+            onClick={removePlayer}
+            disabled={data.length <= 12}>
             Remove Player
           </button>
         </div>
@@ -123,8 +148,7 @@ export default function StatSheet({
             textTransform: "uppercase",
             display: "flex",
             alignItems: "flex-start",
-          }}
-        >
+          }}>
           {teamName.toUpperCase()}
         </h1>
       </div>
@@ -133,16 +157,14 @@ export default function StatSheet({
         <table
           border="1"
           cellPadding="5"
-          style={{ borderCollapse: "collapse", marginBottom: "1rem"}}
-        >
+          style={{ borderCollapse: "collapse", marginBottom: "1rem" }}>
           <thead
             style={{
               position: "sticky",
               background: "#283344",
               top: 0,
               zIndex: 1,
-            }}
-          >
+            }}>
             <tr>
               <th rowSpan="2">No.</th>
               <th rowSpan="2">Player Name</th>
@@ -166,8 +188,7 @@ export default function StatSheet({
                   style={{
                     opacity: lesthan ? 0.6 : 1,
                     backgroundColor: lesthan ? "#5858585a" : "transparent",
-                  }}
-                >
+                  }}>
                   {Object.keys(row).map((field) => {
                     let inputWidth;
                     let thefontweight;
@@ -199,8 +220,6 @@ export default function StatSheet({
                           }
                           style={{
                             width: inputWidth,
-                            textTransform:
-                              field === "player" ? "uppercase" : "none",
                             fontWeight: thefontweight,
                             borderRadius: "5px",
                           }}
@@ -211,8 +230,21 @@ export default function StatSheet({
                             handleChange(idx, field, e.target.value)
                           }
                           readOnly={field === "total"}
-                          type={field === "fouls" && "number"}
+                          type={field === "fouls" ? "number" : "text"}
+                          placeholder={
+                            field === "player" ? "Select or type name" : ""
+                          }
+                          {...(field === "player"
+                            ? { list: `playersList-${idx}` }
+                            : {})}
                         />
+                        {field === "player" && (
+                          <datalist id={`playersList-${idx}`}>
+                            {playersList.map((playerName) => (
+                              <option key={playerName} value={playerName} />
+                            ))}
+                          </datalist>
+                        )}
                       </td>
                     );
                   })}
@@ -227,16 +259,14 @@ export default function StatSheet({
           display: "grid",
           gridTemplateColumns: "repeat(3, auto)",
           alignItems: "center",
-        }}
-      >
+        }}>
         <p>Players: {data.length} / 20</p>
         <div
           style={{
             alignItems: "center",
             justifyContent: "center",
             display: "flex",
-          }}
-        >
+          }}>
           <table>
             <thead style={{ backgroundColor: headerColor }}>
               <tr>
@@ -317,7 +347,10 @@ export default function StatSheet({
             </tbody>
           </table>
         </div>
-        <button id="GeneralBttn" style={{ height: "25px" }} onClick={exportToCSV}>
+        <button
+          id="GeneralBttn"
+          style={{ height: "25px" }}
+          onClick={exportToCSV}>
           Export CSV
         </button>
       </div>
