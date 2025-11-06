@@ -4,6 +4,7 @@ import { AutoLogout } from "./AutoLogout";
 
 export const NavigationBar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,16 +19,20 @@ export const NavigationBar = () => {
     };
 
     window.addEventListener("authChanged", handleAuthChange);
+    let res = JSON.parse(storedUser);
+    setUser(res?.user_name);
 
     // cleanup listener on unmount
     return () => {
       window.removeEventListener("authChanged", handleAuthChange);
     };
-  }, []);
+  }, [isLoggedIn]);
+
   const shouldAutoLogout = location.pathname === "/adminIndex";
 
   const handleLogout = () => {
     localStorage.removeItem("sessionUser");
+    localStorage.removeItem("teamsList");
     setIsLoggedIn(false);
 
     // notify others that session changed
@@ -38,7 +43,19 @@ export const NavigationBar = () => {
 
   return (
     <nav>
-      <h1>Welcome Basketballero</h1>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          width: "100%",
+        }}>
+        <h1>Welcome Basketballero</h1>
+        {isLoggedIn && (
+          <p>
+            Welcome, <strong>{user}!</strong>
+          </p>
+        )}
+      </div>
       {shouldAutoLogout && <AutoLogout handleLogout={handleLogout} />}
       <Link to="/">Home</Link>
       {isLoggedIn ? (

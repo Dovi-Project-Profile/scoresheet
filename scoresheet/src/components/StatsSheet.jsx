@@ -8,6 +8,7 @@ const headerColor = "#283344";
 const foulBgColor = "#252e3f";
 
 export default function StatSheet({
+  playersList,
   teamName,
   onScoreChange,
   periodLock,
@@ -25,29 +26,18 @@ export default function StatSheet({
     total: "",
   });
 
-  const playersList = [
-    "LeBron James",
-    "Stephen Curry",
-    "Kevin Durant",
-    "Giannis Antetokounmpo",
-    "Luka Doncic",
-  ];
-
   const [data, setData] = useState(Array.from({ length: 12 }, createEmptyRow));
   const [playBuzzer, setPlayBuzzer] = useState(false);
+  const [playerNo, setPlayerNo] = useState();
 
-  const [userInfo, setUserInfo] = useState(null);
-
-  useEffect(() => {
-    // check current stored session
-    const storedUser = localStorage.getItem("sessionUser");
-    setUserInfo(JSON.parse(storedUser));
-  }, []);
   // next move is to validate if there are session user before fetching the
   // list of player base on the team selected
-  console.log(userInfo);
 
   const handleChange = (index, field, value) => {
+    const player = playersList?.find(
+      (t) => `${t.last_name}, ${t.first_name}` === value
+    );
+    setPlayerNo(player);
     const newData = [...data];
     newData[index][field] = value;
 
@@ -143,14 +133,14 @@ export default function StatSheet({
             Remove Player
           </button>
         </div>
-        <h1
+        <h3
           style={{
             textTransform: "uppercase",
             display: "flex",
             alignItems: "flex-start",
           }}>
-          {teamName.toUpperCase()}
-        </h1>
+          {teamName}
+        </h3>
       </div>
 
       <div className="mainStatsContainer">
@@ -235,13 +225,16 @@ export default function StatSheet({
                             field === "player" ? "Select or type name" : ""
                           }
                           {...(field === "player"
-                            ? { list: `playersList-${idx}` }
+                            ? { list: `playersList-${teamName}-${idx}` }
                             : {})}
                         />
                         {field === "player" && (
-                          <datalist id={`playersList-${idx}`}>
-                            {playersList.map((playerName) => (
-                              <option key={playerName} value={playerName} />
+                          <datalist id={`playersList-${teamName}-${idx}`}>
+                            {playersList?.map((playerName) => (
+                              <option
+                                key={playerName?.player_id}
+                                value={`${playerName?.last_name}, ${playerName?.first_name}`}
+                              />
                             ))}
                           </datalist>
                         )}

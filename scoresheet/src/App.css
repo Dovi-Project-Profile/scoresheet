@@ -38,7 +38,6 @@ body {
 
 .TeamNameDiv {
   width: auto;
-  /* background-color: rgb(255, 255, 255); */
   padding: 10px;
   box-sizing: border-box;
   display: flex;
@@ -55,11 +54,27 @@ body {
   text-align: center;
   border: 1px solid transparent;
   min-width: 50px;
-  font-size: 15px;
+  font-size: 12px;
   font-weight: bold;
   color: white;
   background-color: transparent;
   text-transform: uppercase;
+  &::placeholder {
+      color: rgb(221, 221, 221);
+      opacity: 1;
+    }
+  
+    &::-webkit-input-placeholder {
+      color: rgb(221, 221, 221);
+    }
+  
+    &:-ms-input-placeholder {
+      color: rgb(221, 221, 221);
+    }
+  
+    &::-ms-input-placeholder {
+      color: rgb(221, 221, 221);
+    }
 }
 .Score {
   text-align: center;

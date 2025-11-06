@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-// import { supabase } from "../../supabaseClient";
 import "./AdminStyles.css";
 import {
   fetchCitiesMunicipalities,
@@ -8,8 +7,6 @@ import {
 } from "./fetchFunctions";
 import { supabase } from "../../supabaseClient";
 import { useDebouncer } from "../../hooks/useDebouncer";
-// import { useRegions } from "./RegionsAPI";
-// import { useDebouncer } from "../../hooks/useDebouncer";
 
 export const PlayerForm = ({ teams }) => {
   const INITIAL_PLAYER_INFO = {

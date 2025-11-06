@@ -118,7 +118,6 @@ const handleAddTeam = async () => {
       if (error) throw error;
 
       alert("Team successfully added!");
-      // await fetchTeams();
       await refreshTeams();
       setMode("view");
       setForm(INITIAL_FROM);

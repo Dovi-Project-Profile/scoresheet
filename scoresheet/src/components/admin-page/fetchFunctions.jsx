@@ -103,25 +103,39 @@ export const fetchTeams = async () => {
   }
 };
 
-export const fetchPlayers = async () => {
+export const fetchPlayers = async ({ team = null } = {}) => {
   try {
-    const { data, error } = await supabase
+    // Build the base query
+    let query = supabase
       .from("tbl_local_players")
       .select(
-        `*,
+        `
+        *,
         tbl_local_team (
-            team_name,
-            short_name
-            )`
+          team_id,
+          team_name,
+          short_name
+        )
+      `
       )
       .order("player_id", { ascending: true });
+
+    // Optional filter if `team` parameter is passed
+    if (team) {
+      query = query.eq("team_id", team);
+    }
+
+    // Execute query
+    const { data, error } = await query;
 
     if (error) throw error;
     return data;
   } catch (err) {
     console.error("Error fetching players list:", err.message);
+    return [];
   }
 };
+
 
 export const fetchPlayerStats = async (playerId) => {
   try {
