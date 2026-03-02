@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 
 export const Period = ({ onPeriodChange }) => {
   const [period, setPeriod] = useState(1);
@@ -37,7 +38,7 @@ export const Period = ({ onPeriodChange }) => {
             const value = e.target.value;
             if (/^\d*$/.test(value)) {
               // Allows only numbers (empty string is okay for backspace)
-              setPeriod(value === "" ? "" : parseInt(value, 10));
+              setPeriod(value === "" ? "" : Number.parseInt(value, 10));
             }
           }}
         />
@@ -75,3 +76,7 @@ export const Period = ({ onPeriodChange }) => {
     </div>
   );
 };
+
+Period.propTypes = {
+  onPeriodChange: PropTypes.func.isRequired
+}

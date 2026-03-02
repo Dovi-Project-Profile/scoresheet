@@ -21,20 +21,11 @@ export const Scoreboard = () => {
 
   const [userInfo, setUserInfo] = useState(null);
 
-  // const userChecker = () => {
-  //   if (!userInfo) {
-  //     console.log("No user found");
-  //   } else {
-  //     console.log("User Found");
-  //   }
-  // };
-
   useEffect(() => {
     // check current stored session
     try {
       const storedUser = localStorage.getItem("sessionUser");
       if (storedUser) setUserInfo(JSON.parse(storedUser));
-      console.log("Ignore for a while", userInfo);
     } catch (err) {
       console.error("Invalid session in storage:", err);
       setUserInfo(null);
@@ -172,7 +163,7 @@ export const Scoreboard = () => {
               onChange={(e) => {
                 const value = e.target.value;
                 if (/^\d*$/.test(value)) {
-                  setHomeScore(value === "" ? "" : parseInt(value, 10));
+                  setHomeScore(value === "" ? "" : Number.parseInt(value, 10));
                 }
               }}
             />
@@ -227,7 +218,7 @@ export const Scoreboard = () => {
               onChange={(e) => {
                 const value = e.target.value;
                 if (/^\d*$/.test(value)) {
-                  setAwayScore(value === "" ? "" : parseInt(value, 10));
+                  setAwayScore(value === "" ? "" : Number.parseInt(value, 10));
                 }
               }}
             />

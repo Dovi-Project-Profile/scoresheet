@@ -7,6 +7,7 @@ import {
 } from "./fetchFunctions";
 import { supabase } from "../../supabaseClient";
 import { useDebouncer } from "../../hooks/useDebouncer";
+import PropTypes from "prop-types";
 
 export const PlayerForm = ({ teams }) => {
   const INITIAL_PLAYER_INFO = {
@@ -160,25 +161,20 @@ export const PlayerForm = ({ teams }) => {
   return (
     <div className="teamWrapper">
       <form className="teamForm">
-        <b
-          style={{
-            borderBottom: "1px solid black",
-            gridColumn: "1 / span 4",
-            display: "flex",
-            justifyContent: "space-between",
-          }}>
+        <b className="buttonContainer">
           Register Player
           {(playerInfo.player_id || mode === "new") && (
             <button
               className="clearBttn"
               disabled={false}
               type="button"
-              onClick={cancelRes}>
+              onClick={cancelRes}
+            >
               {mode === "view" ? "Clear" : "Cancel"}
             </button>
           )}
         </b>
-        <label>First Name</label>
+        <text>First Name</text>
         <input
           disabled={mode === "view"}
           value={playerInfo?.first_name}
@@ -186,7 +182,7 @@ export const PlayerForm = ({ teams }) => {
             handleChangeForm("first_name", e.target.value);
           }}
         />
-        <label>Middle Name</label>
+        <text>Middle Name</text>
         <input
           disabled={mode === "view"}
           value={playerInfo?.middle_name}
@@ -194,7 +190,7 @@ export const PlayerForm = ({ teams }) => {
             handleChangeForm("middle_name", e.target.value);
           }}
         />
-        <label>Last Name</label>
+        <text>Last Name</text>
         <input
           disabled={mode === "view"}
           value={playerInfo?.last_name}
@@ -202,7 +198,7 @@ export const PlayerForm = ({ teams }) => {
             handleChangeForm("last_name", e.target.value);
           }}
         />
-        <label>Jersey No.</label>
+        <text>Jersey No.</text>
         <input
           type="number"
           disabled={mode === "view"}
@@ -211,13 +207,14 @@ export const PlayerForm = ({ teams }) => {
             handleChangeForm("jersey_number", e.target.value);
           }}
         />
-        <label>Team</label>
+        <text>Team</text>
         <select
           disabled={mode === "view"}
           value={playerInfo?.team_id ?? ""}
           onChange={(e) => {
             handleChangeForm("team_id", e.target.value);
-          }}>
+          }}
+        >
           <option value={""}></option>
           {teams?.map((elem, index) => (
             <option key={elem.team_id + index} value={elem.team_id}>
@@ -225,13 +222,14 @@ export const PlayerForm = ({ teams }) => {
             </option>
           ))}
         </select>
-        <label>Position</label>
+        <text>Position</text>
         <select
           disabled={mode === "view"}
           value={playerInfo?.position}
           onChange={(e) => {
             handleChangeForm("position", e.target.value);
-          }}>
+          }}
+        >
           <option value=""></option>
           <option value="PG">PG</option>
           <option value="SG">SG</option>
@@ -239,7 +237,7 @@ export const PlayerForm = ({ teams }) => {
           <option value="PF">PF</option>
           <option value="C">C</option>
         </select>
-        <label>Birthdate</label>
+        <text>Birthdate</text>
         <input
           disabled={mode === "view"}
           type="date"
@@ -249,7 +247,7 @@ export const PlayerForm = ({ teams }) => {
             handleChangeForm("birthdate", e.target.value);
           }}
         />
-        <label>Age</label>
+        <text>Age</text>
         <input
           type="number"
           disabled={mode === "view"}
@@ -263,8 +261,9 @@ export const PlayerForm = ({ teams }) => {
             gridColumn: "1/span 2",
             display: "grid",
             gridTemplateColumns: "repeat(4, auto)",
-          }}>
-          <label>Height cm~</label>
+          }}
+        >
+          <text>Height cm~</text>
           <input
             style={{ width: "3rem" }}
             type="number"
@@ -276,7 +275,7 @@ export const PlayerForm = ({ teams }) => {
           />
           {/* </div> */}
           {/* <div> */}
-          <label>Weight kg~</label>
+          <text>Weight kg~</text>
           <input
             style={{ width: "3rem" }}
             type="number"
@@ -288,11 +287,12 @@ export const PlayerForm = ({ teams }) => {
             }}
           />
         </div>
-        <label>Hometown</label>
+        <text>Hometown</text>
         <select
           disabled={cities.length === 0 || mode === "view"}
           value={playerInfo?.hometown}
-          onChange={(e) => handleChangeForm("hometown", e.target.value)}>
+          onChange={(e) => handleChangeForm("hometown", e.target.value)}
+        >
           <option value=""></option>
           {cities.map((city) => (
             <option key={city.code} value={city.name}>
@@ -307,7 +307,8 @@ export const PlayerForm = ({ teams }) => {
             }}
             id="GeneralBttn"
             type="button"
-            onClick={handleViewStats}>
+            onClick={handleViewStats}
+          >
             View Stats
           </button>
         )}
@@ -316,7 +317,8 @@ export const PlayerForm = ({ teams }) => {
             gridColumn: "3/span 2",
             display: "grid",
             gridTemplateColumns: "auto auto",
-          }}>
+          }}
+        >
           <button
             id="GeneralBttn"
             type="button"
@@ -324,7 +326,8 @@ export const PlayerForm = ({ teams }) => {
             // style={{ borderBottom: "1px solid black" }}
             onClick={() => {
               mode === "edit" ? debouncedEdit() : setMode("edit");
-            }}>
+            }}
+          >
             {mode === "view" ? "Edit" : "Save edit"}
           </button>
           <button
@@ -334,12 +337,13 @@ export const PlayerForm = ({ teams }) => {
             // style={{ borderBottom: "1px solid black" }}
             onClick={() => {
               mode === "new" ? debouncedAdd() : handleAddNewPlayer();
-            }}>
+            }}
+          >
             {mode === "new" ? "Save player" : "New player"}
           </button>
         </div>
       </form>
-      {!players.length ? null : (
+      {players?.length ? (
         <div className="tableWrapper">
           <table className="tableStyle" border="1" cellPadding="8">
             <thead>
@@ -365,9 +369,9 @@ export const PlayerForm = ({ teams }) => {
                     mode === "view" ? handlePlayerInfo(elem, index) : null
                   }
                   style={{
-                    backgroundColor:
-                      selectedRow === index ? "#8fbaff" : "transparent",
-                  }}>
+                    backgroundColor: selectedRow === index ? "#8fbaff" : "",
+                  }}
+                >
                   <td>{elem.first_name}</td>
                   <td>{elem.middle_name}</td>
                   <td>{elem.last_name}</td>
@@ -384,10 +388,13 @@ export const PlayerForm = ({ teams }) => {
             </tbody>
           </table>
         </div>
-      )}
+      ) : null}
       {isModalOpen && selectedPlayer && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay">
+          <div
+            className="modal"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button className="modal-close" onClick={closeModal}>
               &times;
             </button>
@@ -395,7 +402,6 @@ export const PlayerForm = ({ teams }) => {
               {selectedPlayer.last_name} {selectedPlayer.first_name},{" "}
               {selectedPlayer.middle_name}
             </h2>
-            {!playerStats.length && <i>No Data</i>}
             <table>
               <thead>
                 <tr>
@@ -414,21 +420,29 @@ export const PlayerForm = ({ teams }) => {
                     <td>{stat.total_minutes}</td>
                   </tr>
                 ))}
-                <tr style={{ fontWeight: "bolder" }}>
-                  <td colSpan="2">Total</td>
-                  <td>
-                    {playerStats.reduce(
-                      (sum, stat) => sum + (stat.total_points || 0),
-                      0
-                    )}
-                  </td>
-                  <td>
-                    {playerStats.reduce(
-                      (sum, stat) => sum + (stat.total_minutes || 0),
-                      0
-                    )}
-                  </td>
-                </tr>
+                {playerStats.length ? (
+                  <tr style={{ fontWeight: "bolder" }}>
+                    <td colSpan="2">Total</td>
+                    <td>
+                      {playerStats.reduce(
+                        (sum, stat) => sum + (stat.total_points || 0),
+                        0,
+                      )}
+                    </td>
+                    <td>
+                      {playerStats.reduce(
+                        (sum, stat) => sum + (stat.total_minutes || 0),
+                        0,
+                      )}
+                    </td>
+                  </tr>
+                ) : (
+                  <tr style={{ fontWeight: "bolder" }}>
+                    <td colSpan="4">
+                      <i>No Data</i>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -436,4 +450,8 @@ export const PlayerForm = ({ teams }) => {
       )}
     </div>
   );
+};
+
+PlayerForm.propTypes = {
+  teams: PropTypes.array.isRequired,
 };

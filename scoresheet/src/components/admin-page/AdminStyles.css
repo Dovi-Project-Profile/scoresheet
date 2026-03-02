@@ -2,35 +2,48 @@
   max-height: 300px;
   overflow-y: auto;
   border: 1px solid #ccc;
-  width: fit-content;
+  width: 100%;
+}
+
+:root {
+  --table-border: #ddd;
+  --table-header-bg: #f0f0f0;
+  --row-odd-bg: #ffffff;
+  --row-even-bg: #f7f7f7;
+  --row-hover-bg: #eaeaea;
 }
 .tableStyle {
   width: 100%;
   border-collapse: collapse;
-  border: 1px solid #ddd;
+  border: 1px solid var(--table-border);
 }
-.tableStyle thead th {
-  position: sticky;
-  top: 0;
-  background-color: #f0f0f0;
-  z-index: 2;
-}
+
+.tableStyle th,
 .tableStyle td {
   padding: 8px;
   text-align: left;
 }
-/* Zebra striping effect */
+
+.tableStyle thead th {
+  position: sticky;
+  top: 0;
+  background: var(--table-header-bg);
+  z-index: 2;
+}
+
 .tableStyle tbody tr:nth-child(odd) {
-  background-color: #ffffff; /* white rows */
+  background: var(--row-odd-bg);
 }
+
 .tableStyle tbody tr:nth-child(even) {
-  background-color: #f7f7f7; /* light gray rows */
+  background: var(--row-even-bg);
 }
-/* Optional: highlight on hover */
+
 .tableStyle tbody tr:hover {
-  background-color: #eaeaea;
+  background: var(--row-hover-bg);
   cursor: pointer;
 }
+
 .clearBttn {
   width: fit-content;
   justify-content: end;
@@ -38,11 +51,14 @@
   grid-column: 4;
   border: transparent;
 }
+.maxWith {
+  width: 170px;
+}
 .teamForm {
   display: grid;
   align-items: flex-start;
   justify-content: start;
-  grid-template-columns: auto auto auto auto;
+  grid-template-columns: "repeat(4, 1fr)";
   gap: 10px;
   padding: 20px;
   background-color: #f0f0f0;
@@ -50,10 +66,20 @@
   width: max-content;
   height: max-content;
 }
+
+.buttonContainer {
+  border-bottom: 1px solid black;
+  grid-column: 1 / span 4;
+  display: flex;
+  justify-content: space-between;
+}
+
 .teamWrapper {
   box-sizing: border-box;
-  padding-bottom: 20px;
-  display: flex;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 40vw 55vw;
+  place-items: center;
   gap: 20px;
 }
 .teamWrapper> :nth-child(2) {
@@ -95,8 +121,8 @@
 .modal {
   background: #fff;
   border-radius: 12px;
-  width: 90%;
-  max-width: 700px;
+  width: fit-content;
+  max-width: 90%;
   padding: 24px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
   position: relative;

@@ -67,7 +67,7 @@ export const fetchCitiesMunicipalities = async () => {
       }
 
       // Remove any extra spaces or redundant words
-      name = name.replace(/\s+/g, " ").trim();
+      name = name.replaceAll(/\s+/g, " ").trim();
 
       return { ...item, name };
     });
@@ -136,7 +136,6 @@ export const fetchPlayers = async ({ team = null } = {}) => {
   }
 };
 
-
 export const fetchPlayerStats = async (playerId) => {
   try {
     const { data, error } = await supabase
@@ -152,3 +151,24 @@ export const fetchPlayerStats = async (playerId) => {
   }
 };
 
+export const fetchPlayersByTeam = async (teamId) => {
+  try {
+    const { data, error } = await supabase
+      .from("tbl_local_players")
+      .select(`
+        *,
+        tbl_local_team (
+          team_name,
+          short_name
+        )
+      `)
+      .eq("team_id", teamId)
+      .order("player_id", { ascending: true });
+
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    console.error("Error fetching players by team:", err.message);
+    return [];
+  }
+};

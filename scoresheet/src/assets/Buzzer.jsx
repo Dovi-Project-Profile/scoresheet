@@ -1,5 +1,6 @@
 import buzzerSound from "./buzzer1.mp3";
 import { useEffect, useRef } from "react";
+import PropTypes from 'prop-types';
 
 const Alert = ({ trigger }) => {
   const audioRef = useRef(null);
@@ -17,5 +18,9 @@ const Alert = ({ trigger }) => {
     </audio>
   );
 };
+
+Alert.propTypes  = {
+  trigger: PropTypes.func.isRequired,
+}
 
 export default Alert;

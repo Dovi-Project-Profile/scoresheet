@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./StatsSheet.css";
 import "../TimerStyle.css";
 import "./buttonStyles.css";
 import Alert from "../assets/Buzzer";
+import PropTypes from 'prop-types';
 
 const headerColor = "#283344";
 const foulBgColor = "#252e3f";
@@ -28,7 +29,7 @@ export default function StatSheet({
 
   const [data, setData] = useState(Array.from({ length: 12 }, createEmptyRow));
   const [playBuzzer, setPlayBuzzer] = useState(false);
-  const [playerNo, setPlayerNo] = useState();
+  const [, setPlayerNo] = useState();
 
   // next move is to validate if there are session user before fetching the
   // list of player base on the team selected
@@ -49,7 +50,7 @@ export default function StatSheet({
       const parse = (str) =>
         str
           .split("")
-          .map((c) => parseInt(c) || 0)
+          .map((c) => Number.parseInt(c) || 0)
           .reduce((a, b) => a + b, 0);
 
       const q1 = parse(newData[index].firstquarter || "");
@@ -100,6 +101,15 @@ export default function StatSheet({
       a.download = `statsheet_team_${teamName.toUpperCase()}.csv`;
       a.click();
       URL.revokeObjectURL(url);
+    }
+  };
+
+  const targetBuzzCheckFunc = (e) => {
+    if (e.target.checked === true) {
+      setPlayBuzzer(true);
+      setTimeout(() => {
+        setPlayBuzzer(false);
+      }, 500);
     }
   };
 
@@ -174,7 +184,7 @@ export default function StatSheet({
               let lesthan = Number(row.fouls) >= 5;
               return (
                 <tr
-                  key={idx}
+                  key={idx +1}
                   style={{
                     opacity: lesthan ? 0.6 : 1,
                     backgroundColor: lesthan ? "#5858585a" : "transparent",
@@ -324,12 +334,7 @@ export default function StatSheet({
                           key={`to-${halfIdx}-to-${toIdx}`}
                           type="checkbox"
                           onChange={(e) => {
-                            if (e.target.checked === true) {
-                              setPlayBuzzer(true);
-                              setTimeout(() => {
-                                setPlayBuzzer(false);
-                              }, 500);
-                            }
+                            targetBuzzCheckFunc(e)
                           }}
                         />
                       )
@@ -350,4 +355,13 @@ export default function StatSheet({
       <Alert trigger={playBuzzer} />
     </div>
   );
+}
+
+StatSheet.propTypes = {
+  playersList:PropTypes.string.isRequired,
+  teamName:PropTypes.string.isRequired,
+  onScoreChange:PropTypes.func.isRequired,
+  periodLock:PropTypes.number.isRequired,
+  onChangeBonusHome:PropTypes.func.isRequired,
+  onChangeBonusAway:PropTypes.func.isRequired,
 }
