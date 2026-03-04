@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 export const TeamList = ({ playersList, closeModal }) => {
   return (
     <div className="modal-overlay">
-      <div className="modal" onClick={(e) => e.stopPropagation()} role="button">
+      <div className="modal">
         <button className="modal-close" onClick={closeModal}>
           &times;
         </button>

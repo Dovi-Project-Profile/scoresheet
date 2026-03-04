@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import PropTypes from "prop-types";
 
 export const AutoLogout = ({ handleLogout }) => {
   const inActive = 15; // inactivity delay before showing modal 15mins
@@ -47,16 +48,16 @@ export const AutoLogout = ({ handleLogout }) => {
       startTimer();
     };
 
-    window.addEventListener("mousemove", resetTimer);
-    window.addEventListener("keydown", resetTimer);
-    window.addEventListener("click", resetTimer);
+    globalThis.addEventListener("mousemove", resetTimer);
+    globalThis.addEventListener("keydown", resetTimer);
+    globalThis.addEventListener("click", resetTimer);
 
     return () => {
       clearTimeout(timerRef.current);
       clearInterval(countdownRef.current);
-      window.removeEventListener("mousemove", resetTimer);
-      window.removeEventListener("keydown", resetTimer);
-      window.removeEventListener("click", resetTimer);
+      globalThis.removeEventListener("mousemove", resetTimer);
+      globalThis.removeEventListener("keydown", resetTimer);
+      globalThis.removeEventListener("click", resetTimer);
     };
   }, [handleLogout]);
 
@@ -116,3 +117,7 @@ export const AutoLogout = ({ handleLogout }) => {
     </>
   );
 };
+
+AutoLogout.propTypes = {
+  handleLogout: PropTypes.func.isRequired
+}

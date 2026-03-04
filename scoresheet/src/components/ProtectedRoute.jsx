@@ -1,4 +1,5 @@
 import { Navigate } from "react-router-dom";
+import PropTypes from "prop-types"; 
 
 export const ProtectedRoute = ({ children }) => {
   // check for your local session
@@ -13,3 +14,7 @@ export const ProtectedRoute = ({ children }) => {
   // otherwise, render the protected page
   return children;
 };
+
+ProtectedRoute.propTypes = {
+  children: PropTypes.func.isRequired
+}

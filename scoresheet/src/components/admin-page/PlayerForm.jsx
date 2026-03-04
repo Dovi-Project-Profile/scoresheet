@@ -8,6 +8,7 @@ import {
 import { supabase } from "../../supabaseClient";
 import { useDebouncer } from "../../hooks/useDebouncer";
 import PropTypes from "prop-types";
+import { calculateAge } from "../function/ageCalculator";
 
 export const PlayerForm = ({ teams }) => {
   const INITIAL_PLAYER_INFO = {
@@ -51,15 +52,18 @@ export const PlayerForm = ({ teams }) => {
       setSelectedRow(null);
       setMode("view");
     };
-    if (mode !== "view") {
-      if (confirm("Are you sure you want to proceed?")) reset();
-    } else {
+    if (mode === "view") {
       reset();
-    }
+    } else if (confirm("Are you sure you want to proceed?")) reset();
   };
+
 
   const handleChangeForm = (key, value) => {
     setPlayerInfo((prev) => ({ ...prev, [key]: value }));
+    if (key === "birthdate") {
+      const yearsOld = calculateAge(value);
+      setPlayerInfo((prev) => ({ ...prev, age: yearsOld }));
+    }
   };
 
   const handlePlayerInfo = (elem, index) => {
@@ -114,13 +118,13 @@ export const PlayerForm = ({ teams }) => {
           first_name: playerInfo.first_name,
           middle_name: playerInfo.middle_name,
           last_name: playerInfo.last_name,
-          jersey_number: parseInt(playerInfo.jersey_number),
+          jersey_number: Number.parseInt(playerInfo.jersey_number),
           position: playerInfo.position,
           birthdate: playerInfo.birthdate,
-          height_cm: parseInt(playerInfo.height_cm),
-          weight_kg: parseInt(playerInfo.weight_kg),
-          team_id: parseInt(playerInfo.team_id),
-          age: parseInt(playerInfo.age),
+          height_cm: Number.parseInt(playerInfo.height_cm),
+          weight_kg: Number.parseInt(playerInfo.weight_kg),
+          team_id: Number.parseInt(playerInfo.team_id),
+          age: Number.parseInt(playerInfo.age),
           hometown: playerInfo.hometown,
         },
       ]);
@@ -391,10 +395,7 @@ export const PlayerForm = ({ teams }) => {
       ) : null}
       {isModalOpen && selectedPlayer && (
         <div className="modal-overlay">
-          <div
-            className="modal"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="modal">
             <button className="modal-close" onClick={closeModal}>
               &times;
             </button>

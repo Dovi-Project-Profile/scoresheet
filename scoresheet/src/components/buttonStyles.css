@@ -14,8 +14,8 @@
     background-color: #293345;
     color: white;
 
-     &:not(:disabled):hover {
-        background-color: #4e6081;    
+    &:not(:disabled):hover {
+        background-color: #4e6081;
         color: white;
     }
 
@@ -24,6 +24,7 @@
         opacity: 0.6;
     }
 }
+
 /* Optional: make your button look better */
 #LoginBttn {
     border: 1px solid black;
@@ -67,22 +68,24 @@
         transform: rotate(360deg);
     }
 }
+
 .loginMessage {
     font-size: smaller;
-    background-color: lightcoral;
-    color: maroon;
-    width: 8vw;
+    background-color: rgb(241, 179, 179);
+    color: rgb(128, 0, 0);
+    width: 150px;
     height: auto;
     padding: 10px;
     border-radius: 5px;
     text-align: center;
+    place-self: center;
 }
 
 .formStyle {
     border: 1px solid #6d6d6d75;
-        border-radius: 5px;
-        padding: 20px;
-        width: fit-content;
+    border-radius: 5px;
+    padding: 20px;
+    width: fit-content;
     display: grid;
     align-items: center;
     justify-content: center;

@@ -18,13 +18,13 @@ export const NavigationBar = () => {
       setIsLoggedIn(!!updatedUser);
     };
 
-    window.addEventListener("authChanged", handleAuthChange);
+    globalThis.addEventListener("authChanged", handleAuthChange);
     let res = JSON.parse(storedUser);
     setUser(res?.user_name);
 
     // cleanup listener on unmount
     return () => {
-      window.removeEventListener("authChanged", handleAuthChange);
+      globalThis.removeEventListener("authChanged", handleAuthChange);
     };
   }, [isLoggedIn]);
 
@@ -36,7 +36,7 @@ export const NavigationBar = () => {
     setIsLoggedIn(false);
 
     // notify others that session changed
-    window.dispatchEvent(new Event("authChanged"));
+    globalThis.dispatchEvent(new Event("authChanged"));
 
     navigate("/login");
   };

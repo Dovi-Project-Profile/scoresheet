@@ -28,7 +28,7 @@ export function useLoginDebounced(debounceDelay = 700) {
           }
           // Store session and notify app
           localStorage.setItem("sessionUser", JSON.stringify(data));
-          window.dispatchEvent(new Event("authChanged"));
+          globalThis.dispatchEvent(new Event("authChanged"));
           onSuccess?.(data);
         } catch (err) {
           console.error("Login error:", err.message);
